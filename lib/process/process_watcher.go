@@ -3,19 +3,21 @@ package process
 import (
 	"bytes"
 	"io"
-	"io/ioutil"
 	"os"
 	"strconv"
 	"time"
 )
 
 type ProcessWatcher struct {
-	MaxCPU string
-	MaxRAM string
+	statsBuf *bytes.Buffer
+	MaxCPU   string
+	MaxRAM   string
 }
 
 func New() *ProcessWatcher {
-	p := &ProcessWatcher{}
+	p := &ProcessWatcher{
+		statsBuf: &bytes.Buffer{},
+	}
 	go p.watch()
 	return p
 }
@@ -107,26 +109,32 @@ func (w *ProcessWatcher) listProcesses() ([]string, error) {
 }
 
 func (w *ProcessWatcher) processStats(pid string) (string, int, int, error) {
-	f, err := ioutil.ReadFile("/proc/" + pid + "/stat")
+	f, err := os.Open("/proc/" + pid + "/stat")
 	if err != nil {
 		return "", 0, 0, err
 	}
+	defer f.Close()
+
+	w.statsBuf.ReadFrom(f)
+	defer w.statsBuf.Reset()
+
+	stats := w.statsBuf.Bytes()
 
 	cpu := 0
 	ram := 0
 
 	// extract the name
-	p := bytes.IndexByte(f, '(')
-	p2 := bytes.IndexByte(f, ')')
-	name := string(f[p+1 : p2])
+	p := bytes.IndexByte(stats, '(')
+	p2 := bytes.IndexByte(stats, ')')
+	name := string(stats[p+1 : p2])
 
 	adv := p2
 	i := 1
 
 	for {
-		p := bytes.IndexByte(f[adv:], ' ')
+		p := bytes.IndexByte(stats[adv:], ' ')
 		if i == 13 || i == 14 {
-			s := f[adv : p+adv]
+			s := stats[adv : p+adv]
 			t, err := strconv.Atoi(string(s))
 			if err != nil {
 				panic(err)
@@ -135,7 +143,7 @@ func (w *ProcessWatcher) processStats(pid string) (string, int, int, error) {
 			cpu += t
 		}
 		if i == 23 {
-			s := f[adv : p+adv]
+			s := stats[adv : p+adv]
 			t, err := strconv.Atoi(string(s))
 			if err != nil {
 				panic(err)
