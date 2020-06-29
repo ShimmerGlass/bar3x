@@ -5,12 +5,22 @@ import (
 	"image/color"
 	"image/draw"
 	"math"
+	"strings"
+	"unicode/utf8"
 
 	"github.com/shimmerglass/bar3x/ui"
+	"github.com/shimmerglass/bar3x/ui/cache"
 	"github.com/ungerik/go-cairo"
 )
 
 const heightChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+type textCacheKey struct {
+	font     string
+	fontSize float64
+	color    color.Color
+	text     string
+}
 
 type Text struct {
 	Base
@@ -117,6 +127,18 @@ func (t *Text) updateSize() {
 }
 
 func (t *Text) Draw(x, y int, im draw.Image) {
+	k := textCacheKey{
+		font:     t.Font(),
+		fontSize: t.FontSize(),
+		color:    t.Color(),
+		text:     t.drawnText,
+	}
+	w, h := t.width.V, t.height.V
+
+	cache.Draw(k, w, h, x, y, im, t.draw)
+}
+
+func (t *Text) draw(im draw.Image) {
 	font := t.Font()
 	fontSize := t.FontSize()
 	col := t.Color()

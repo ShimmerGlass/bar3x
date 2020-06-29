@@ -8,12 +8,21 @@ import (
 
 	"github.com/fogleman/gg"
 	"github.com/shimmerglass/bar3x/ui"
+	"github.com/shimmerglass/bar3x/ui/cache"
 )
 
 const (
 	BarDirectionBottomTop = "bottom-top"
 	BarDirectionLeftRight = "left-right"
 )
+
+type barCacheKey struct {
+	radius    int
+	direction string
+	fgColor   color.Color
+	bgColor   color.Color
+	value     float64
+}
 
 type Bar struct {
 	Base
@@ -75,7 +84,20 @@ func (b *Bar) SetBgColor(v color.Color) {
 	b.bgColor = v
 }
 
-func (b *Bar) Draw(dx, dy int, im draw.Image) {
+func (b *Bar) Draw(x, y int, im draw.Image) {
+	k := barCacheKey{
+		radius:    b.radius,
+		direction: b.direction,
+		fgColor:   b.fgColor,
+		bgColor:   b.bgColor,
+		value:     b.value,
+	}
+	w, h := b.width.V, b.height.V
+
+	cache.Draw(k, w, h, x, y, im, b.draw)
+}
+
+func (b *Bar) draw(im draw.Image) {
 	dc := gg.NewContext(b.width.V, b.height.V)
 
 	r, w, h, z := float64(b.radius), float64(b.width.V), float64(b.height.V), float64(0)
@@ -153,7 +175,7 @@ func (b *Bar) Draw(dx, dy int, im draw.Image) {
 
 	draw.Draw(
 		im,
-		image.Rect(dx, dy, dx+b.width.V, dy+b.height.V),
+		image.Rect(0, 0, b.width.V, b.height.V),
 		dc.Image(),
 		image.ZP,
 		draw.Over,
