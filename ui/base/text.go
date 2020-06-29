@@ -33,6 +33,7 @@ type Text struct {
 	setFontSize float64
 	setColor    color.Color
 	text        string
+	drawnText   string
 	maxWidth    int
 }
 
@@ -118,9 +119,18 @@ func (t *Text) updateSize() {
 	surface.SelectFontFace(font, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 	surface.SetFontSize(fontSize)
 
+	t.drawnText = t.text
 	exX := surface.TextExtents(t.text)
 	exY := surface.TextExtents(heightChars)
-	surface.Finish()
+
+	max := float64(t.maxWidth)
+	txt := t.text
+	for t.maxWidth > 0 && exX.Xadvance > max {
+		_, s := utf8.DecodeLastRuneInString(txt)
+		txt = strings.TrimSpace(txt[:len(txt)-s])
+		t.drawnText = txt + "…"
+		exX = surface.TextExtents(t.drawnText)
+	}
 
 	t.width.Set(int(math.Ceil(exX.Xadvance)))
 	t.height.Set(int(math.Ceil(fontSize + (exY.Height + exY.Ybearing))))
@@ -143,7 +153,7 @@ func (t *Text) draw(im draw.Image) {
 	fontSize := t.FontSize()
 	col := t.Color()
 
-	if t.text == "" || fontSize == 0 {
+	if t.drawnText == "" || fontSize == 0 {
 		return
 	}
 	w, h := t.width.V, t.height.V
@@ -161,11 +171,11 @@ func (t *Text) draw(im draw.Image) {
 		float64(rgba.A)/255,
 	)
 	surface.MoveTo(0, fontSize)
-	surface.ShowText(t.text)
+	surface.ShowText(t.drawnText)
 
 	draw.Draw(
 		im,
-		image.Rect(x, y, x+w, y+h),
+		image.Rect(0, 0, w, h),
 		surface.GetImage(),
 		image.ZP,
 		draw.Over,
