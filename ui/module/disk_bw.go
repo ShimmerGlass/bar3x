@@ -1,6 +1,7 @@
 package module
 
 import (
+	"context"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -54,7 +55,7 @@ func (m *DiskBandwidth) SetDevs(v []string) {
 	m.devs = v
 }
 
-func (m *DiskBandwidth) Update() {
+func (m *DiskBandwidth) Update(context.Context) {
 	allStats, err := disk.IOCounters(m.devs...)
 	if err != nil {
 		log.Println(err)

@@ -3,6 +3,7 @@ package bar
 import (
 	"fmt"
 	"image"
+	"sync"
 
 	"github.com/BurntSushi/xgb"
 	"github.com/BurntSushi/xgb/xproto"
@@ -25,6 +26,8 @@ import (
 type Bar struct {
 	Win xproto.Window
 	Buf *xgraphics.Image
+
+	lock sync.Mutex
 
 	screen     x.Screen
 	ctx        ui.Context
@@ -199,8 +202,7 @@ func (b *Bar) PaintLeft(im *image.RGBA) {
 	)
 	b.lastLeft = im
 
-	b.Buf.SubImage(maxBounds).(*xgraphics.Image).XDraw()
-	b.Buf.XPaint(b.Win)
+	b.paintPart(maxBounds)
 }
 
 func (b *Bar) PaintCenter(im *image.RGBA) {
@@ -234,8 +236,7 @@ func (b *Bar) PaintCenter(im *image.RGBA) {
 	)
 	b.lastCenter = im
 
-	b.Buf.SubImage(maxBounds).(*xgraphics.Image).XDraw()
-	b.Buf.XPaint(b.Win)
+	b.paintPart(maxBounds)
 }
 
 func (b *Bar) PaintRight(im *image.RGBA) {
@@ -269,8 +270,14 @@ func (b *Bar) PaintRight(im *image.RGBA) {
 	)
 	b.lastRight = im
 
-	b.Buf.SubImage(maxBounds).(*xgraphics.Image).XDraw()
+	b.paintPart(maxBounds)
+}
+
+func (b *Bar) paintPart(bounds image.Rectangle) {
+	b.lock.Lock()
+	b.Buf.SubImage(bounds).(*xgraphics.Image).XDraw()
 	b.Buf.XPaint(b.Win)
+	b.lock.Unlock()
 }
 
 func (b *Bar) SetTrayWidth(w int) {

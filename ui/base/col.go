@@ -74,8 +74,8 @@ func (c *Col) updateSize() {
 			w = ew
 		}
 	}
-	c.width.set(w)
-	c.height.set(h)
+	c.width.Set(w)
+	c.height.Set(h)
 }
 
 func (r *Col) updateChildrenCtx() {
@@ -120,9 +120,9 @@ func (c *Col) Draw(x, y int, im draw.Image) {
 		case HAlignLeft:
 			xOff = 0
 		case HAlighCenter:
-			xOff = (c.width.v - i.Width()) / 2
+			xOff = (c.width.V - i.Width()) / 2
 		case VAlignBottom:
-			xOff = c.width.v - i.Width()
+			xOff = c.width.V - i.Width()
 		}
 		i.Draw(x+xOff, y+yOff, im)
 		yOff += i.Height()

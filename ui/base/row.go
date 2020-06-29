@@ -73,8 +73,8 @@ func (r *Row) updateSize() {
 		}
 	}
 
-	r.width.set(w)
-	r.height.set(h)
+	r.width.Set(w)
+	r.height.Set(h)
 }
 
 func (r *Row) updateChildrenCtx() {
@@ -119,9 +119,9 @@ func (r Row) Draw(x, y int, im draw.Image) {
 		case VAlignTop:
 			yOff = 0
 		case VAlighMiddle:
-			yOff = (r.height.v - i.Height()) / 2
+			yOff = (r.height.V - i.Height()) / 2
 		case VAlignBottom:
-			yOff = r.height.v - i.Height()
+			yOff = r.height.V - i.Height()
 		}
 		i.Draw(x+xOff, y+yOff, im)
 		xOff += i.Width()

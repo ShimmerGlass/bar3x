@@ -66,4 +66,8 @@ func RegisterMarkup(mk *markup.Markup, clock *Clock) {
 	mk.Register("Weather", func(p ui.ParentDrawable) ui.Drawable {
 		return NewWeather(p, mk, clock)
 	})
+
+	mk.Register("Cmd", func(p ui.ParentDrawable) ui.Drawable {
+		return NewCmd(p, mk, clock)
+	})
 }

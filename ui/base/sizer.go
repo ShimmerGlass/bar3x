@@ -141,8 +141,8 @@ func (s Sizer) updateSize() {
 		h += s.paddingTop + s.paddingBottom
 	}
 
-	s.width.set(w)
-	s.height.set(h)
+	s.width.Set(w)
+	s.height.Set(h)
 }
 
 func (s Sizer) Draw(tx, ty int, im draw.Image) {
@@ -150,7 +150,7 @@ func (s Sizer) Draw(tx, ty int, im draw.Image) {
 		return
 	}
 
-	w, h := s.width.v, s.height.v
+	w, h := s.width.V, s.height.V
 	ew, eh := s.inner.Width(), s.inner.Height()
 
 	var x, y int

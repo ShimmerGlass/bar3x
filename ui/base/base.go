@@ -4,41 +4,41 @@ import (
 	"github.com/shimmerglass/bar3x/ui"
 )
 
-type watchInt struct {
-	v   int
+type WatchInt struct {
+	V   int
 	cbs []func(int)
 }
 
-func (w *watchInt) add(c func(int)) {
+func (w *WatchInt) Add(c func(int)) {
 	w.cbs = append(w.cbs, c)
-	c(w.v)
+	c(w.V)
 }
 
-func (w *watchInt) set(v int) {
-	if w.v == v {
+func (w *WatchInt) Set(v int) {
+	if w.V == v {
 		return
 	}
-	w.v = v
+	w.V = v
 	for _, c := range w.cbs {
 		c(v)
 	}
 }
 
-type watchBool struct {
-	v   bool
+type WatchBool struct {
+	V   bool
 	cbs []func(bool)
 }
 
-func (w *watchBool) add(c func(bool)) {
+func (w *WatchBool) Add(c func(bool)) {
 	w.cbs = append(w.cbs, c)
-	c(w.v)
+	c(w.V)
 }
 
-func (w *watchBool) set(v bool) {
-	if w.v == v {
+func (w *WatchBool) Set(v bool) {
+	if w.V == v {
 		return
 	}
-	w.v = v
+	w.V = v
 	for _, c := range w.cbs {
 		c(v)
 	}
@@ -46,18 +46,18 @@ func (w *watchBool) set(v bool) {
 
 type Base struct {
 	parent  ui.ParentDrawable
-	visible *watchBool
-	width   *watchInt
-	height  *watchInt
+	visible *WatchBool
+	width   *WatchInt
+	height  *WatchInt
 	ctx     ui.Context
 }
 
 func NewBase(p ui.ParentDrawable) Base {
 	return Base{
 		parent:  p,
-		visible: &watchBool{v: true},
-		width:   &watchInt{},
-		height:  &watchInt{},
+		visible: &WatchBool{V: true},
+		width:   &WatchInt{},
+		height:  &WatchInt{},
 	}
 }
 
@@ -80,25 +80,25 @@ func (b Base) Notify() {
 }
 
 func (b *Base) Width() int {
-	return b.width.v
+	return b.width.V
 }
 func (b *Base) OnWidthChange(c func(int)) {
-	b.width.add(c)
+	b.width.Add(c)
 }
 
 func (b *Base) Height() int {
-	return b.height.v
+	return b.height.V
 }
 func (b *Base) OnHeightChange(c func(int)) {
-	b.height.add(c)
+	b.height.Add(c)
 }
 
 func (b Base) Visible() bool {
-	return b.visible.v
+	return b.visible.V
 }
 func (b *Base) SetVisible(v bool) {
-	b.visible.set(v)
+	b.visible.Set(v)
 }
 func (b *Base) OnVisibleChange(c func(bool)) {
-	b.visible.add(c)
+	b.visible.Add(c)
 }

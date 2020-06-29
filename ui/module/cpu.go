@@ -1,6 +1,7 @@
 package module
 
 import (
+	"context"
 	"fmt"
 	"math"
 	"runtime"
@@ -105,7 +106,7 @@ func (m *CPU) Init() error {
 	return nil
 }
 
-func (m *CPU) Update() {
+func (m *CPU) Update(context.Context) {
 	vals, _ := cpu.Percent(0, true)
 	avg := 0.0
 	for _, v := range vals {

@@ -19,10 +19,10 @@ func NewSeparatorArrow(p ui.ParentDrawable) *SeparatorArrow {
 }
 
 func (b *SeparatorArrow) SetWidth(v int) {
-	b.width.set(v)
+	b.width.Set(v)
 }
 func (b *SeparatorArrow) SetHeight(v int) {
-	b.height.set(v)
+	b.height.Set(v)
 }
 
 func (b *SeparatorArrow) Color() color.Color {
@@ -33,7 +33,7 @@ func (b *SeparatorArrow) SetColor(v color.Color) {
 }
 
 func (s *SeparatorArrow) Draw(x, y int, im draw.Image) {
-	w, h := s.width.v, s.height.v
+	w, h := s.width.V, s.height.V
 
 	dc := gg.NewContext(w, h)
 	dc.SetColor(s.color)

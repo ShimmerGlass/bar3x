@@ -1,6 +1,7 @@
 package module
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -47,7 +48,7 @@ func (m *DiskUsage) Init() error {
 	return nil
 }
 
-func (m *DiskUsage) Update() {
+func (m *DiskUsage) Update(context.Context) {
 	stat, err := disk.Usage("/")
 	var p float64
 	if err != nil {

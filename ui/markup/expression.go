@@ -8,6 +8,7 @@ import (
 	"strings"
 	"sync"
 	"text/scanner"
+	"time"
 
 	"github.com/PaesslerAG/gval"
 	"github.com/pkg/errors"
@@ -148,6 +149,21 @@ func literalExpr(typ reflect.Type, str string) (gval.Evaluable, error) {
 			return nil, err
 		}
 		value = v
+
+	case reflect.Int64:
+		if typ.String() == "time.Duration" {
+			v, err := time.ParseDuration(str)
+			if err != nil {
+				return nil, err
+			}
+			value = v
+		} else {
+			v, err := strconv.ParseInt(str, 10, 64)
+			if err != nil {
+				return nil, err
+			}
+			value = v
+		}
 
 	case reflect.Float64:
 		v, err := strconv.ParseFloat(str, 64)

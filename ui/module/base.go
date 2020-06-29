@@ -48,5 +48,8 @@ func (b *moduleBase) OnHeightChange(c func(int)) {
 }
 
 func (b *moduleBase) Draw(x, y int, im draw.Image) {
+	if b.Root == nil {
+		return
+	}
 	b.Root.Draw(x, y, im)
 }

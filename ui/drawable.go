@@ -32,11 +32,6 @@ type ParentDrawable interface {
 	ChildContext(index int) Context
 }
 
-type TextDrawable interface {
-	Drawable
-	SetText(string)
-}
-
 type notifier struct {
 	parent Drawable
 }

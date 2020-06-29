@@ -36,13 +36,13 @@ func NewImage(p ui.ParentDrawable) *Image {
 
 func (i *Image) SetWidth(v int) {
 	i.setWidth = v
-	i.width.set(v)
+	i.width.Set(v)
 	i.updateImg()
 }
 
 func (i *Image) SetHeight(v int) {
 	i.setHeight = v
-	i.height.set(v)
+	i.height.Set(v)
 	i.updateImg()
 }
 
@@ -62,10 +62,10 @@ func (i *Image) SetImage(v image.Image) {
 	}
 
 	if i.setWidth == -1 {
-		i.width.set(r.Dx())
+		i.width.Set(r.Dx())
 	}
 	if i.setHeight == -1 {
-		i.height.set(r.Dy())
+		i.height.Set(r.Dy())
 	}
 
 	i.updateImg()

@@ -1,6 +1,7 @@
 package module
 
 import (
+	"context"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -52,7 +53,7 @@ func (m *Interface) SetIface(s string) {
 	m.bw = bandwidth.New(s)
 }
 
-func (m *Interface) Update() {
+func (m *Interface) Update(context.Context) {
 	if m.bw == nil {
 		return
 	}

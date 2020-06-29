@@ -1,6 +1,7 @@
 package module
 
 import (
+	"context"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -38,7 +39,7 @@ func (m *VPN) Init() error {
 	return nil
 }
 
-func (m *VPN) Update() {
+func (m *VPN) Update(context.Context) {
 	if m.nm == nil {
 		var err error
 		m.nm, err = gonetworkmanager.NewNetworkManager()

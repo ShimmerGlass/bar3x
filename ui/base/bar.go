@@ -41,10 +41,10 @@ func (b *Bar) SetValue(v float64) {
 }
 
 func (b *Bar) SetWidth(v int) {
-	b.width.set(v)
+	b.width.Set(v)
 }
 func (b *Bar) SetHeight(v int) {
-	b.height.set(v)
+	b.height.Set(v)
 }
 
 func (b *Bar) Radius() int {
@@ -76,9 +76,9 @@ func (b *Bar) SetBgColor(v color.Color) {
 }
 
 func (b *Bar) Draw(dx, dy int, im draw.Image) {
-	dc := gg.NewContext(b.width.v, b.height.v)
+	dc := gg.NewContext(b.width.V, b.height.V)
 
-	r, w, h, z := float64(b.radius), float64(b.width.v), float64(b.height.v), float64(0)
+	r, w, h, z := float64(b.radius), float64(b.width.V), float64(b.height.V), float64(0)
 
 	var x10, x11, x12,
 		y10, y11, y12, y13,
@@ -87,7 +87,7 @@ func (b *Bar) Draw(dx, dy int, im draw.Image) {
 
 	switch b.direction {
 	case BarDirectionLeftRight:
-		s := math.Round(b.value * float64(b.width.v))
+		s := math.Round(b.value * float64(b.width.V))
 
 		x10, x11, x12 = z, r, s
 		y10, y11, y12, y13 = z, r, h, h-r
@@ -120,7 +120,7 @@ func (b *Bar) Draw(dx, dy int, im draw.Image) {
 		dc.Fill()
 
 	case BarDirectionBottomTop:
-		s := math.Round((1 - b.value) * float64(b.height.v))
+		s := math.Round((1 - b.value) * float64(b.height.V))
 		x0, x1, x2, x3 := z, r, w-r, w
 
 		y10, y11, y12 := z, r, h
@@ -153,7 +153,7 @@ func (b *Bar) Draw(dx, dy int, im draw.Image) {
 
 	draw.Draw(
 		im,
-		image.Rect(dx, dy, dx+b.width.v, dy+b.height.v),
+		image.Rect(dx, dy, dx+b.width.V, dy+b.height.V),
 		dc.Image(),
 		image.ZP,
 		draw.Over,

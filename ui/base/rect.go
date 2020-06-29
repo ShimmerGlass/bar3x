@@ -18,10 +18,10 @@ func NewRect(p ui.ParentDrawable) *Rect {
 }
 
 func (b *Rect) SetWidth(v int) {
-	b.width.set(v)
+	b.width.Set(v)
 }
 func (b *Rect) SetHeight(v int) {
-	b.height.set(v)
+	b.height.Set(v)
 }
 
 func (b *Rect) Color() color.Color {
@@ -39,7 +39,7 @@ func (r *Rect) Draw(x, y int, im draw.Image) {
 
 	draw.Draw(
 		im,
-		image.Rect(x, y, x+r.width.v, y+r.height.v),
+		image.Rect(x, y, x+r.width.V, y+r.height.V),
 		image.NewUniform(r.color),
 		image.ZP,
 		draw.Over,

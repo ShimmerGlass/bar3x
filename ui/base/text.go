@@ -97,8 +97,8 @@ func (t *Text) updateSize() {
 	fontSize := t.FontSize()
 
 	if t.text == "" || fontSize == 0 {
-		t.width.set(0)
-		t.height.set(0)
+		t.width.Set(0)
+		t.height.Set(0)
 		return
 	}
 
@@ -112,8 +112,8 @@ func (t *Text) updateSize() {
 	exY := surface.TextExtents(heightChars)
 	surface.Finish()
 
-	t.width.set(int(math.Ceil(exX.Xadvance)))
-	t.height.set(int(math.Ceil(fontSize + (exY.Height + exY.Ybearing))))
+	t.width.Set(int(math.Ceil(exX.Xadvance)))
+	t.height.Set(int(math.Ceil(fontSize + (exY.Height + exY.Ybearing))))
 }
 
 func (t *Text) Draw(x, y int, im draw.Image) {
@@ -124,7 +124,7 @@ func (t *Text) Draw(x, y int, im draw.Image) {
 	if t.text == "" || fontSize == 0 {
 		return
 	}
-	w, h := t.width.v, t.height.v
+	w, h := t.width.V, t.height.V
 
 	rgba := color.RGBAModel.Convert(col).(color.RGBA)
 	surface := cairo.NewSurface(cairo.FORMAT_ARGB32, w, h)

@@ -1,6 +1,7 @@
 package module
 
 import (
+	"context"
 	"time"
 
 	"github.com/shimmerglass/bar3x/ui"
@@ -38,6 +39,6 @@ func (m *Date) Init() error {
 	return nil
 }
 
-func (m *Date) Update() {
+func (m *Date) Update(context.Context) {
 	m.Txt.SetText(time.Now().Format("Mon, _2 Jan 15:04:05"))
 }

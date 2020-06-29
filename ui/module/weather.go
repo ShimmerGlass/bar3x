@@ -1,6 +1,7 @@
 package module
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"time"
@@ -70,7 +71,7 @@ func (m *Weather) SetLocation(v string) {
 	m.location = v
 }
 
-func (m *Weather) Update() {
+func (m *Weather) Update(context.Context) {
 	if m.location == "" {
 		return
 	}

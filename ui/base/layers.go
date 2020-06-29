@@ -79,8 +79,8 @@ func (l *Layers) updateSize() {
 			h = eh
 		}
 	}
-	l.width.set(w)
-	l.height.set(h)
+	l.width.Set(w)
+	l.height.Set(h)
 }
 
 func (l *Layers) Draw(x, y int, im draw.Image) {
@@ -93,17 +93,17 @@ func (l *Layers) Draw(x, y int, im draw.Image) {
 		case HAlignLeft:
 			xOff = 0
 		case HAlighCenter:
-			xOff = (l.width.v - i.Width()) / 2
+			xOff = (l.width.V - i.Width()) / 2
 		case HAlignRight:
-			xOff = l.width.v - i.Width()
+			xOff = l.width.V - i.Width()
 		}
 		switch l.vAlign {
 		case VAlignTop:
 			yOff = 0
 		case VAlighMiddle:
-			yOff = (l.height.v - i.Height()) / 2
+			yOff = (l.height.V - i.Height()) / 2
 		case VAlignBottom:
-			yOff = l.height.v - i.Height()
+			yOff = l.height.V - i.Height()
 		}
 		i.Draw(x+xOff, y+yOff, im)
 	}

@@ -47,6 +47,9 @@ func (r *Root) SetVisible(bool)            {}
 func (r *Root) OnVisibleChange(func(bool)) {}
 
 func (r *Root) Notify() {
+	if r.Inner == nil {
+		return
+	}
 	r.onNotify()
 }
 
@@ -68,6 +71,9 @@ func (r *Root) Draw(x, y int, im draw.Image) {
 func (r *Root) Paint() {
 	r.lock.Lock()
 	defer r.lock.Unlock()
+	if r.Inner == nil {
+		return
+	}
 
 	w, h := r.Inner.Width(), r.Inner.Height()
 	if w == 0 || h == 0 {

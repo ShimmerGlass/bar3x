@@ -1,6 +1,7 @@
 package module
 
 import (
+	"context"
 	"time"
 
 	"github.com/shimmerglass/bar3x/lib/process"
@@ -74,7 +75,7 @@ func (m *RAM) Init() error {
 	return nil
 }
 
-func (m *RAM) Update() {
+func (m *RAM) Update(context.Context) {
 	v, _ := mem.VirtualMemory()
 	free := v.Free + v.Cached
 	m.GbTxt.Set(humanateBytes(free))

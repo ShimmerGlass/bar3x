@@ -24,10 +24,10 @@ func NewGraph(p ui.ParentDrawable) *Graph {
 }
 
 func (b *Graph) SetWidth(v int) {
-	b.width.set(v)
+	b.width.Set(v)
 }
 func (b *Graph) SetHeight(v int) {
-	b.height.set(v)
+	b.height.Set(v)
 }
 
 func (b *Graph) Color() color.Color {
@@ -52,17 +52,17 @@ func (b *Graph) SetDirection(v string) {
 }
 
 func (g Graph) Draw(xt, yt int, im draw.Image) {
-	off := g.width.v - len(g.data)
+	off := g.width.V - len(g.data)
 	for i, d := range g.data {
 		var y1, y2 int
 		x := i + off
 		switch g.direction {
 		case GraphDirUp:
-			y1 = int((1 - d) * float64(g.height.v))
-			y2 = g.height.v
+			y1 = int((1 - d) * float64(g.height.V))
+			y2 = g.height.V
 		case GraphDirDown:
 			y1 = 0
-			y2 = int(d * float64(g.height.v))
+			y2 = int(d * float64(g.height.V))
 		}
 
 		for i := y1; i <= y2; i++ {

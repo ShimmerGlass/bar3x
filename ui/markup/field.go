@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"reflect"
+	"time"
 
 	"github.com/shimmerglass/bar3x/ui"
 )
@@ -85,6 +86,15 @@ func (f *field) Set(v interface{}) error {
 	// color special case
 	if f.Type.String() == "color.Color" && val.Kind() == reflect.String {
 		c, err := ui.ParseColor(v.(string))
+		if err != nil {
+			return fmt.Errorf("%s: cannot set field %q: %s", f.StructName, f.Name, err)
+		}
+		val = reflect.ValueOf(c)
+	}
+
+	// duration special case
+	if f.Type.String() == "time.Duration" && val.Kind() == reflect.String {
+		c, err := time.ParseDuration(v.(string))
 		if err != nil {
 			return fmt.Errorf("%s: cannot set field %q: %s", f.StructName, f.Name, err)
 		}
