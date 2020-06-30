@@ -31,7 +31,7 @@ func NewDiskUsage(p ui.ParentDrawable, mk *markup.Markup, clock *Clock) *DiskUsa
 
 func (m *DiskUsage) Init() error {
 	_, err := m.mk.Parse(m, m, `
-		<Sizer ref="Root" Height="{height}">
+		<Sizer ref="Root" Height="{bar_height}">
 			<Row>
 				<Icon>{icons.disk}</Icon>
 				<Sizer PaddingLeft="{h_padding}">

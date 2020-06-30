@@ -37,15 +37,15 @@ func (m *Music) Init() error {
 				<Layers>
 					<Rect
 						ref="Placeholder"
-						Width="{height - v_padding * 2}"
-						Height="{height - v_padding * 2}"
+						Width="{bar_height - v_padding * 2}"
+						Height="{bar_height - v_padding * 2}"
 						Color="{inactive_color}"
 						Visible="{!$Img.Visible}"
 					/>
 					<Image
 						ref="Img"
-						Width="{height - v_padding * 2}"
-						Height="{height - v_padding * 2}"
+						Width="{bar_height - v_padding * 2}"
+						Height="{bar_height - v_padding * 2}"
 					/>
 				</Layers>
 			</Sizer>

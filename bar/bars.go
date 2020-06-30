@@ -49,11 +49,6 @@ func CreateBars(ctx ui.Context, x *xgbutil.XUtil) (*Bars, error) {
 		return nil, err
 	}
 
-	err = bars.createTray()
-	if err != nil {
-		return nil, err
-	}
-
 	go clock.Run()
 
 	return bars, nil
@@ -65,12 +60,30 @@ func (b *Bars) createBars() error {
 		return err
 	}
 
+	trayOutput := b.ctx.MustString("tray_output")
+	trayCreated := false
+
 	for _, s := range screens {
 		bar, err := NewBar(b.ctx, b.x, s)
 		if err != nil {
 			return err
 		}
 		b.bars = append(b.bars, bar)
+
+		if trayCreated {
+			continue
+		}
+
+		for _, output := range s.Outputs {
+			if output != trayOutput {
+				continue
+			}
+			err = b.createTray(bar, s)
+			if err != nil {
+				return err
+			}
+			trayCreated = true
+		}
 	}
 
 	return nil
@@ -128,12 +141,23 @@ func (b *Bars) createRoots() error {
 	return nil
 }
 
-func (b *Bars) createTray() error {
-	tr := tray.New(b.x, b.bars[0].Win, func(s tray.State) {
-		b.bars[0].SetTrayWidth(s.Width)
-		b.RightRoot.Notify()
-	})
-	return tr.Init(b.ctx.MustColor("bg_color"))
+func (b *Bars) createTray(bar *Bar, screen x.Screen) error {
+	tr := tray.New(
+		b.x,
+		b.bars[0].Win,
+		tray.Config{
+			BarWidth:        screen.Width,
+			BarHeight:       b.ctx.MustInt("bar_height"),
+			IconSize:        b.ctx.MustInt("tray_icon_size"),
+			IconPadding:     b.ctx.MustInt("tray_icon_padding"),
+			BackgroundColor: b.ctx.MustColor("bg_color"),
+		},
+		func(s tray.State) {
+			b.bars[0].SetTrayWidth(s.Width)
+			b.RightRoot.Notify()
+		},
+	)
+	return tr.Init()
 }
 
 func (b *Bars) onClockTick() {

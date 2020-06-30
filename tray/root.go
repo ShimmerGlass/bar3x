@@ -5,12 +5,11 @@ import (
 
 	"github.com/BurntSushi/xgb"
 	"github.com/BurntSushi/xgb/xproto"
-	"github.com/BurntSushi/xgbutil"
-	"github.com/BurntSushi/xgbutil/xprop"
+	"github.com/shimmerglass/bar3x/x"
 )
 
-func createTrayWindow(x *xgbutil.XUtil, screen *xproto.ScreenInfo, bgColor color.Color) (xproto.Window, error) {
-	wid, _ := xproto.NewWindowId(x.Conn())
+func (t *Tray) createTrayWindow(screen *xproto.ScreenInfo, bgColor color.Color) (xproto.Window, error) {
+	wid, _ := xproto.NewWindowId(t.x.Conn())
 
 	selMask := xproto.CwBackPixel | xproto.CwBorderPixel | xproto.CwOverrideRedirect | xproto.CwColormap
 	selVal := []uint32{
@@ -20,49 +19,41 @@ func createTrayWindow(x *xgbutil.XUtil, screen *xproto.ScreenInfo, bgColor color
 		uint32(screen.DefaultColormap),
 	}
 
-	// CreateWindow takes a boatload of parameters.
-	xproto.CreateWindow(x.Conn(), screen.RootDepth, wid, screen.Root,
+	xproto.CreateWindow(
+		t.x.Conn(),
+		screen.RootDepth,
+		wid,
+		screen.Root,
 		-1, -1, 1, 1, 0,
-		xproto.WindowClassInputOutput, screen.RootVisual, uint32(selMask), selVal)
-
-	trayOrAtom, err := xprop.Atom(x, "_NET_SYSTEM_TRAY_ORIENTATION", false)
-	if err != nil {
-		return 0, err
-	}
+		xproto.WindowClassInputOutput,
+		screen.RootVisual,
+		uint32(selMask),
+		selVal,
+	)
 
 	payload := make([]byte, 4)
 	xgb.Put32(payload, 0) // Horizontal
-	xproto.ChangeProperty(x.Conn(),
+	xproto.ChangeProperty(t.x.Conn(),
 		xproto.PropModeReplace,
 		wid,
-		trayOrAtom,
+		x.MustAtom(t.x, "_NET_SYSTEM_TRAY_ORIENTATION"),
 		xproto.AtomCardinal,
 		32,
 		1,
 		payload,
 	)
 
-	trayVizAtom, err := xprop.Atom(x, "_NET_SYSTEM_TRAY_VISUAL", false)
-	if err != nil {
-		return 0, err
-	}
-
 	payload = make([]byte, 4)
 	xgb.Put32(payload, uint32(screen.RootVisual))
-	xproto.ChangeProperty(x.Conn(),
+	xproto.ChangeProperty(t.x.Conn(),
 		xproto.PropModeReplace,
 		wid,
-		trayVizAtom,
+		x.MustAtom(t.x, "_NET_SYSTEM_TRAY_VISUAL"),
 		xproto.AtomVisualid,
 		32,
 		1,
 		payload,
 	)
-
-	trayColorsAtom, err := xprop.Atom(x, "_NET_SYSTEM_TRAY_COLORS", false)
-	if err != nil {
-		return 0, err
-	}
 
 	r, g, b, _ := bgColor.RGBA()
 	data := make([]byte, 3*4*4)
@@ -75,10 +66,10 @@ func createTrayWindow(x *xgbutil.XUtil, screen *xproto.ScreenInfo, bgColor color
 		xgb.Put32(data[off:], uint32(b))
 		off += 4
 	}
-	xproto.ChangeProperty(x.Conn(),
+	xproto.ChangeProperty(t.x.Conn(),
 		xproto.PropModeReplace,
 		wid,
-		trayColorsAtom,
+		x.MustAtom(t.x, "_NET_SYSTEM_TRAY_COLORS"),
 		xproto.AtomCardinal,
 		32, 12,
 		data,

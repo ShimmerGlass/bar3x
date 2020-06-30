@@ -42,7 +42,7 @@ type Bar struct {
 }
 
 func NewBar(ctx ui.Context, X *xgbutil.XUtil, screen x.Screen) (*Bar, error) {
-	w, h := screen.Width, ctx.MustInt("height")
+	w, h := screen.Width, ctx.MustInt("bar_height")
 
 	win, err := xwindow.Generate(X)
 	if err != nil {

@@ -93,7 +93,7 @@ func (m *CPU) Init() error {
 					BgColor="{inactive_color}"
 					FgColor="{accent_color}"
 					Width="3"
-					Height="{height - v_padding * 2}"
+					Height="{bar_height - v_padding * 2}"
 				/>
 			</Sizer>
 		`)

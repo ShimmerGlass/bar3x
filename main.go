@@ -10,6 +10,7 @@ import (
 	_ "net/http/pprof"
 
 	"github.com/BurntSushi/xgb"
+	"github.com/BurntSushi/xgb/xproto"
 	"github.com/BurntSushi/xgbutil"
 	"github.com/BurntSushi/xgbutil/xevent"
 	"github.com/shimmerglass/bar3x/bar"
@@ -30,6 +31,12 @@ func main() {
 	}
 
 	xevent.ErrorHandlerSet(X, func(err xgb.Error) {
+		// we sometimes get BadWindow errors from the tray, I'm not sure why
+		// silence them to avoid flooding the output
+		if _, ok := err.(xproto.WindowError); ok {
+			return
+		}
+
 		log.Errorf("X error: %s", err)
 	})
 

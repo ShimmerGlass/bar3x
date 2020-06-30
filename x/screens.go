@@ -9,6 +9,7 @@ import (
 type Screen struct {
 	X, Y          int
 	Width, Height int
+	Outputs       []string
 }
 
 func Screens(X *xgb.Conn) ([]Screen, error) {
@@ -36,11 +37,21 @@ func Screens(X *xgb.Conn) ([]Screen, error) {
 			return nil, err
 		}
 
+		outputNames := []string{}
+		for _, out := range info.Outputs {
+			output, err := randr.GetOutputInfo(X, out, 0).Reply()
+			if err != nil {
+				return nil, err
+			}
+			outputNames = append(outputNames, string(output.Name))
+		}
+
 		res = append(res, Screen{
-			X:      int(info.X),
-			Y:      int(info.Y),
-			Width:  int(info.Width),
-			Height: int(info.Height),
+			X:       int(info.X),
+			Y:       int(info.Y),
+			Width:   int(info.Width),
+			Height:  int(info.Height),
+			Outputs: outputNames,
 		})
 	}
 

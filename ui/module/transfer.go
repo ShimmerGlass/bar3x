@@ -35,14 +35,14 @@ func (b *transfer) Init() error {
 				<Graph
 					ref="RxGraph"
 					Color="{inactive_color}"
-					Height="{height / 2 - v_padding}"
+					Height="{bar_height / 2 - v_padding}"
 					Width="{$TxtRow.Width}"
 					Direction="up"
 				/>
 				<Graph
 					ref="TxGraph"
 					Color="{inactive_color}"
-					Height="{height / 2 - v_padding}"
+					Height="{bar_height / 2 - v_padding}"
 					Width="{$TxtRow.Width}"
 					Direction="down"
 				/>
