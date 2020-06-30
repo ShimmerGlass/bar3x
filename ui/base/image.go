@@ -56,7 +56,7 @@ func (i *Image) SetImage(v image.Image) {
 
 	i.img = v
 	i.rimg = nil
-	r := image.ZR
+	r := image.Rectangle{}
 	if v != nil {
 		r = v.Bounds()
 	}
@@ -121,7 +121,7 @@ func (i *Image) Draw(x, y int, im draw.Image) {
 			im.Bounds().Dy(),
 		),
 		i.rimg,
-		image.ZP,
+		image.Point{},
 		draw.Over,
 	)
 }

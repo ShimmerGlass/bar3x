@@ -177,7 +177,7 @@ func (b *Bar) draw(im draw.Image) {
 		im,
 		image.Rect(0, 0, b.width.V, b.height.V),
 		dc.Image(),
-		image.ZP,
+		image.Point{},
 		draw.Over,
 	)
 }

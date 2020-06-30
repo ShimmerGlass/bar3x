@@ -21,10 +21,8 @@ func (c Context) New(vals Context) Context {
 	for k, v := range c {
 		n[k] = v
 	}
-	if vals != nil {
-		for k, v := range vals {
-			n[k] = v
-		}
+	for k, v := range vals {
+		n[k] = v
 	}
 	return n
 }
@@ -102,21 +100,21 @@ func ParseColor(s string) (color.Color, error) {
 
 	r, err := strconv.ParseInt(s[1:3], 16, 64)
 	if err != nil {
-		return nil, fmt.Errorf(colorParseFormatFmt+":%w", s, err)
+		return nil, fmt.Errorf(colorParseFormatFmt+": %w", s, err)
 	}
 	g, err := strconv.ParseInt(s[3:5], 16, 64)
 	if err != nil {
-		return nil, fmt.Errorf(colorParseFormatFmt+":%w", s, err)
+		return nil, fmt.Errorf(colorParseFormatFmt+": %w", s, err)
 	}
 	b, err := strconv.ParseInt(s[5:7], 16, 64)
 	if err != nil {
-		return nil, fmt.Errorf(colorParseFormatFmt+":%w", s, err)
+		return nil, fmt.Errorf(colorParseFormatFmt+": %w", s, err)
 	}
 	a := int64(255)
 	if len(s) == 9 {
 		a, err = strconv.ParseInt(s[7:9], 16, 64)
 		if err != nil {
-			return nil, fmt.Errorf(colorParseFormatFmt+":%w", s, err)
+			return nil, fmt.Errorf(colorParseFormatFmt+": %w", s, err)
 		}
 	}
 

@@ -37,7 +37,7 @@ func (m *RAM) Init() error {
 	_, err := m.mk.Parse(m, m, `
 		<Row ref="Root">
 			<Sizer PaddingRight="{h_padding}">
-				<Icon>{icons["chip2"]}</Icon>
+				<Icon>{icons.chip2}</Icon>
 			</Sizer>
 			<Col>
 				<Row ref="TextRow">

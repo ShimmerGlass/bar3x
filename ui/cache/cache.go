@@ -23,5 +23,5 @@ func Draw(key interface{}, w, h, x, y int, im draw.Image, id func(draw.Image)) {
 		v = iim
 	}
 	cim := v.(*image.RGBA)
-	draw.Draw(im, bounds.Add(image.Pt(x, y)), cim, image.ZP, draw.Over)
+	draw.Draw(im, bounds.Add(image.Pt(x, y)), cim, image.Point{}, draw.Over)
 }

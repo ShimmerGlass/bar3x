@@ -41,5 +41,5 @@ func (s *SeparatorArrow) Draw(x, y int, im draw.Image) {
 	dc.DrawLine(0, float64(h)/2, float64(w), float64(h))
 	dc.Stroke()
 
-	draw.Draw(im, im.Bounds().Add(image.Pt(x, y)), dc.Image(), image.ZP, draw.Over)
+	draw.Draw(im, im.Bounds().Add(image.Pt(x, y)), dc.Image(), image.Point{}, draw.Over)
 }

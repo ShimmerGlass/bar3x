@@ -2,7 +2,6 @@ package module
 
 import (
 	"context"
-	"fmt"
 	"math"
 	"runtime"
 	"strconv"
@@ -42,7 +41,7 @@ func (m *CPU) Init() error {
 	_, err := m.mk.Parse(m, m, `
 		<Row ref="Root">
 			<Sizer PaddingRight="{h_padding}">
-				<Icon>{icons["chip"]}</Icon>
+				<Icon>{icons.chip}</Icon>
 			</Sizer>
 			<Col>
 				<Row ref="TextRow">
@@ -134,5 +133,5 @@ func (m *CPU) formatCPU(v float64) string {
 		usageStr = " " + usageStr
 	}
 
-	return fmt.Sprintf("%s", usageStr)
+	return usageStr
 }

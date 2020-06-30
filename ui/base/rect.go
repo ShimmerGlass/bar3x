@@ -41,7 +41,7 @@ func (r *Rect) Draw(x, y int, im draw.Image) {
 		im,
 		image.Rect(x, y, x+r.width.V, y+r.height.V),
 		image.NewUniform(r.color),
-		image.ZP,
+		image.Point{},
 		draw.Over,
 	)
 }

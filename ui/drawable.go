@@ -31,11 +31,3 @@ type ParentDrawable interface {
 	Children() []Drawable
 	ChildContext(index int) Context
 }
-
-type notifier struct {
-	parent Drawable
-}
-
-func (n notifier) Notify() {
-	n.parent.Notify()
-}

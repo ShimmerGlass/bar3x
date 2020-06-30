@@ -33,7 +33,7 @@ func (m *DiskUsage) Init() error {
 	_, err := m.mk.Parse(m, m, `
 		<Sizer ref="Root" Height="{height}">
 			<Row>
-				<Icon>{icons["disk"]}</Icon>
+				<Icon>{icons.disk}</Icon>
 				<Sizer PaddingLeft="{h_padding}">
 					<TxtUnit ref="Txt" />
 				</Sizer>

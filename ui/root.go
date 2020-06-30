@@ -81,7 +81,7 @@ func (r *Root) Paint() {
 	}
 	size := image.Rect(0, 0, w, h)
 	r.ensureImage(size)
-	draw.Draw(r.im, r.im.Rect, r.bg, image.ZP, draw.Src)
+	draw.Draw(r.im, r.im.Rect, r.bg, image.Point{}, draw.Src)
 	r.Inner.Draw(0, 0, r.im)
 	r.bounds = size
 }

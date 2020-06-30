@@ -35,14 +35,14 @@ func (b *transfer) Init() error {
 				<Graph
 					ref="RxGraph"
 					Color="{inactive_color}"
-					Height="{height / 2}"
+					Height="{height / 2 - v_padding}"
 					Width="{$TxtRow.Width}"
 					Direction="up"
 				/>
 				<Graph
 					ref="TxGraph"
 					Color="{inactive_color}"
-					Height="{height / 2}"
+					Height="{height / 2 - v_padding}"
 					Width="{$TxtRow.Width}"
 					Direction="down"
 				/>
@@ -51,7 +51,7 @@ func (b *transfer) Init() error {
 				<Sizer Width="50" HAlign="left">
 					<TxtUnit ref="RxTxt" />
 				</Sizer>
-				<Icon>{icons["transfer"]}</Icon>
+				<Icon>{icons.transfer}</Icon>
 				<Sizer Width="50" HAlign="right">
 					<TxtUnit ref="TxTxt" />
 				</Sizer>

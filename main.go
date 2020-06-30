@@ -9,8 +9,6 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 
-	_ "net/http/pprof"
-
 	"github.com/BurntSushi/xgb"
 	"github.com/BurntSushi/xgbutil"
 	"github.com/BurntSushi/xgbutil/xevent"

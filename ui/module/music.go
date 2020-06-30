@@ -53,7 +53,7 @@ func (m *Music) Init() error {
 				<Row ref="TextRow">
 					<Text ref="Title" MaxWidth="120" />
 					<Sizer ref="Sep" PaddingLeft="{h_padding}" PaddingRight="{h_padding}">
-						<Icon>{icons["dot"]}</Icon>
+						<Icon>{icons.dot}</Icon>
 					</Sizer>
 					<Text ref="Artist" MaxWidth="120" />
 				</Row>

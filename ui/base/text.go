@@ -177,7 +177,7 @@ func (t *Text) draw(im draw.Image) {
 		im,
 		image.Rect(0, 0, w, h),
 		surface.GetImage(),
-		image.ZP,
+		image.Point{},
 		draw.Over,
 	)
 }

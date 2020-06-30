@@ -29,7 +29,7 @@ func NewVPN(p ui.ParentDrawable, mk *markup.Markup, clock *Clock) *VPN {
 
 func (m *VPN) Init() error {
 	_, err := m.mk.Parse(m, m, `
-		<Icon ref="Root">{icons["lock"]}</Icon>
+		<Icon ref="Root">{icons.lock}</Icon>
 	`)
 	if err != nil {
 		return err

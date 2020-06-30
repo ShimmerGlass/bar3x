@@ -158,7 +158,7 @@ func (b *Bar) initBackground() error {
 
 func (b *Bar) updateAll() {
 	b.background.Paint()
-	DrawCopySrcRGBAToBGRA(b.Buf, b.Buf.Rect, b.background.Image(), image.ZP)
+	DrawCopySrcRGBAToBGRA(b.Buf, b.Buf.Rect, b.background.Image(), image.Point{})
 	b.Buf.XDraw()
 	if b.lastLeft != nil {
 		b.PaintLeft(b.lastLeft)
@@ -198,7 +198,7 @@ func (b *Bar) PaintLeft(im *image.RGBA) {
 			(b.Buf.Rect.Dy()-im.Rect.Dy())/2,
 		)),
 		im,
-		image.ZP,
+		image.Point{},
 	)
 	b.lastLeft = im
 
@@ -232,7 +232,7 @@ func (b *Bar) PaintCenter(im *image.RGBA) {
 			(b.Buf.Rect.Dy()-im.Rect.Dy())/2,
 		)),
 		im,
-		image.ZP,
+		image.Point{},
 	)
 	b.lastCenter = im
 
@@ -266,7 +266,7 @@ func (b *Bar) PaintRight(im *image.RGBA) {
 			(b.Buf.Rect.Dy()-im.Rect.Dy())/2,
 		)),
 		im,
-		image.ZP,
+		image.Point{},
 	)
 	b.lastRight = im
 
