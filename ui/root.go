@@ -65,6 +65,12 @@ func (r *Root) ChildContext(int) Context {
 	return r.ctx
 }
 
+func (r *Root) SendEvent(ev Event) bool {
+	if r.Inner == nil {
+		return false
+	}
+	return r.Inner.SendEvent(ev)
+}
 func (r *Root) Draw(x, y int, im draw.Image) {
 }
 

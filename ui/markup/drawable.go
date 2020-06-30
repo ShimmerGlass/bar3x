@@ -108,3 +108,7 @@ func (b *MarkupDrawable) OnVisibleChange(c func(bool)) {
 func (b *MarkupDrawable) Draw(x, y int, im draw.Image) {
 	b.inner.Draw(x, y, im)
 }
+
+func (b *MarkupDrawable) SendEvent(ev ui.Event) bool {
+	return b.inner.SendEvent(ev)
+}

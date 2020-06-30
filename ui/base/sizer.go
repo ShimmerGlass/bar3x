@@ -1,6 +1,7 @@
 package base
 
 import (
+	"image"
 	"image/draw"
 
 	"github.com/shimmerglass/bar3x/ui"
@@ -125,6 +126,25 @@ func (s *Sizer) SetPaddingLeft(v int) {
 	s.updateSize()
 }
 
+func (s *Sizer) SendEvent(ev ui.Event) bool {
+	if !s.Base.SendEvent(ev) {
+		return false
+	}
+
+	if !s.inner.Visible() {
+		return true
+	}
+
+	ir := s.innerRect()
+	if ev.At.In(ir) {
+		iev := ev
+		iev.At = ev.At.Sub(ir.Min)
+		s.inner.SendEvent(iev)
+	}
+
+	return true
+}
+
 func (s Sizer) updateSize() {
 	w, h := s.setWidth, s.setHeight
 	ew, eh := 0, 0
@@ -145,11 +165,16 @@ func (s Sizer) updateSize() {
 	s.height.Set(h)
 }
 
-func (s Sizer) Draw(tx, ty int, im draw.Image) {
+func (s *Sizer) Draw(tx, ty int, im draw.Image) {
 	if !s.inner.Visible() {
 		return
 	}
 
+	ir := s.innerRect()
+	s.inner.Draw(tx+ir.Min.X, ty+ir.Min.Y, im)
+}
+
+func (s *Sizer) innerRect() image.Rectangle {
 	w, h := s.width.V, s.height.V
 	ew, eh := s.inner.Width(), s.inner.Height()
 
@@ -173,5 +198,5 @@ func (s Sizer) Draw(tx, ty int, im draw.Image) {
 		y = h - eh - s.paddingBottom
 	}
 
-	s.inner.Draw(tx+x, ty+y, im)
+	return image.Rect(x, y, x+ew, y+eh)
 }

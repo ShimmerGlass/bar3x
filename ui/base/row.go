@@ -1,6 +1,7 @@
 package base
 
 import (
+	"image"
 	"image/draw"
 
 	"github.com/shimmerglass/bar3x/ui"
@@ -58,6 +59,31 @@ func (c *Row) Align() string {
 }
 func (c *Row) SetAlign(v string) {
 	c.align = v
+}
+
+func (c *Row) SendEvent(ev ui.Event) bool {
+	if !c.Base.SendEvent(ev) {
+		return false
+	}
+
+	x := 0
+	for _, i := range c.inner {
+		if !i.Visible() {
+			continue
+		}
+		w, h := i.Width(), i.Height()
+		y := (c.height.V - h) / 2
+
+		if ev.At.In(image.Rect(x, y, x+w, y+h)) {
+			iev := ev
+			iev.At = ev.At.Sub(image.Pt(x, y))
+			i.SendEvent(iev)
+		}
+
+		x += w
+	}
+
+	return true
 }
 
 func (r *Row) updateSize() {

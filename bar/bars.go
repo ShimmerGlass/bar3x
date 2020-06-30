@@ -39,12 +39,12 @@ func CreateBars(ctx ui.Context, x *xgbutil.XUtil) (*Bars, error) {
 	bars.mk = mk
 	bars.clock = clock
 
-	err := bars.createBars()
+	err := bars.createRoots()
 	if err != nil {
 		return nil, err
 	}
 
-	err = bars.createRoots()
+	err = bars.createBars()
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func (b *Bars) createBars() error {
 	trayCreated := false
 
 	for _, s := range screens {
-		bar, err := NewBar(b.ctx, b.x, s)
+		bar, err := NewBar(b.ctx, b.x, s, b.LeftRoot, b.CenterRoot, b.RightRoot)
 		if err != nil {
 			return err
 		}

@@ -45,11 +45,15 @@ func (w *WatchBool) Set(v bool) {
 }
 
 type Base struct {
-	parent  ui.ParentDrawable
+	parent ui.ParentDrawable
+	ctx    ui.Context
+
 	visible *WatchBool
 	width   *WatchInt
 	height  *WatchInt
-	ctx     ui.Context
+
+	leftClickHandler  func(ui.Event) bool
+	rightClickHandler func(ui.Event) bool
 }
 
 func NewBase(p ui.ParentDrawable) Base {
@@ -101,4 +105,30 @@ func (b *Base) SetVisible(v bool) {
 }
 func (b *Base) OnVisibleChange(c func(bool)) {
 	b.visible.Add(c)
+}
+
+func (b *Base) SendEvent(ev ui.Event) bool {
+	switch ev.Type {
+	case ui.EventTypeLeftClick:
+		if b.leftClickHandler != nil {
+			return b.leftClickHandler(ev)
+		}
+	case ui.EventTypeRightClick:
+		if b.rightClickHandler != nil {
+			return b.rightClickHandler(ev)
+		}
+	}
+	return true
+}
+func (b *Base) OnLeftClick() func(ui.Event) bool {
+	return b.leftClickHandler
+}
+func (b *Base) OnRightClick() func(ui.Event) bool {
+	return b.leftClickHandler
+}
+func (b *Base) SetOnLeftClick(cb func(ui.Event) bool) {
+	b.leftClickHandler = cb
+}
+func (b *Base) SetOnRightClick(cb func(ui.Event) bool) {
+	b.rightClickHandler = cb
 }

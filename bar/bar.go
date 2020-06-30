@@ -14,13 +14,13 @@ import (
 	"github.com/BurntSushi/xgbutil/mousebind"
 	"github.com/BurntSushi/xgbutil/xevent"
 	"github.com/BurntSushi/xgbutil/xgraphics"
-	"github.com/BurntSushi/xgbutil/xprop"
 	"github.com/BurntSushi/xgbutil/xwindow"
 	"github.com/shimmerglass/bar3x/ui"
 	"github.com/shimmerglass/bar3x/ui/base"
 	"github.com/shimmerglass/bar3x/ui/markup"
 	"github.com/shimmerglass/bar3x/ui/module"
 	"github.com/shimmerglass/bar3x/x"
+	log "github.com/sirupsen/logrus"
 )
 
 type Bar struct {
@@ -35,13 +35,23 @@ type Bar struct {
 
 	TrayWidth int
 	padding   int
+	height    int
+
+	LeftRoot   *ui.Root
+	CenterRoot *ui.Root
+	RightRoot  *ui.Root
 
 	lastLeft   *image.RGBA
 	lastCenter *image.RGBA
 	lastRight  *image.RGBA
 }
 
-func NewBar(ctx ui.Context, X *xgbutil.XUtil, screen x.Screen) (*Bar, error) {
+func NewBar(
+	ctx ui.Context,
+	X *xgbutil.XUtil,
+	screen x.Screen,
+	left, center, right *ui.Root,
+) (*Bar, error) {
 	w, h := screen.Width, ctx.MustInt("bar_height")
 
 	win, err := xwindow.Generate(X)
@@ -65,7 +75,7 @@ func NewBar(ctx ui.Context, X *xgbutil.XUtil, screen x.Screen) (*Bar, error) {
 		State: icccm.StateNormal,
 	})
 	if err != nil { // not a fatal error
-		xgbutil.Logger.Printf("Could not set WM_STATE: %s", err)
+		log.Errorf("Could not set WM_STATE: %s", err)
 	}
 
 	// Set WM_NORMAL_HINTS so the window can't be resized.
@@ -77,23 +87,16 @@ func NewBar(ctx ui.Context, X *xgbutil.XUtil, screen x.Screen) (*Bar, error) {
 		MaxHeight: uint(h),
 	})
 	if err != nil { // not a fatal error
-		xgbutil.Logger.Printf("Could not set WM_NORMAL_HINTS: %s", err)
+		log.Errorf("Could not set WM_NORMAL_HINTS: %s", err)
 	}
 
 	// Set _NET_WM_NAME so it looks nice.
 	err = ewmh.WmNameSet(X, win.Id, "bar3x")
 	if err != nil { // not a fatal error
-		xgbutil.Logger.Printf("Could not set _NET_WM_NAME: %s", err)
+		log.Errorf("Could not set _NET_WM_NAME: %s", err)
 	}
 
-	// Now we can map, since we've set all our properties.
-	// (The initial map is when the window manager starts managing.)
 	err = ewmh.WmWindowTypeSet(X, win.Id, []string{"_NET_WM_WINDOW_TYPE_DOCK"})
-	if err != nil {
-		return nil, err
-	}
-
-	strutAtom, err := xprop.Atom(X, "_NET_WM_STRUT_PARTIAL", false)
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +109,7 @@ func NewBar(ctx ui.Context, X *xgbutil.XUtil, screen x.Screen) (*Bar, error) {
 	xproto.ChangeProperty(X.Conn(),
 		xproto.PropModeReplace,
 		win.Id,
-		strutAtom,
+		x.MustAtom(X, "_NET_WM_STRUT_PARTIAL"),
 		xproto.AtomCardinal,
 		32, 12,
 		strutVals,
@@ -114,19 +117,43 @@ func NewBar(ctx ui.Context, X *xgbutil.XUtil, screen x.Screen) (*Bar, error) {
 
 	ximg := xgraphics.New(X, image.Rect(0, 0, w, h))
 
+	b := &Bar{
+		Win:     win.Id,
+		Buf:     ximg,
+		padding: ctx.MustInt("h_padding"),
+		height:  h,
+		ctx:     ctx,
+		screen:  screen,
+
+		LeftRoot:   left,
+		CenterRoot: center,
+		RightRoot:  right,
+	}
+
+	// events
+	win.Listen(xproto.EventMaskButtonPress, xproto.EventMaskButtonRelease)
+	xevent.ButtonReleaseFun(func(X *xgbutil.XUtil, e xevent.ButtonReleaseEvent) {
+		var t ui.EventType
+		switch e.Detail {
+		case xproto.ButtonIndex1:
+			t = ui.EventTypeLeftClick
+		case xproto.ButtonIndex3:
+			t = ui.EventTypeRightClick
+		default:
+			return
+		}
+		b.displatchEvent(ui.Event{
+			Type: t,
+			At:   image.Pt(int(e.EventX), int(e.EventY)),
+		})
+	}).Connect(X, win.Id)
+
 	ximg.XSurfaceSet(win.Id)
 	ximg.XDraw()
 	ximg.XPaint(win.Id)
 
 	win.Map()
 
-	b := &Bar{
-		Win:     win.Id,
-		Buf:     ximg,
-		padding: ctx.MustInt("h_padding"),
-		ctx:     ctx,
-		screen:  screen,
-	}
 	err = b.initBackground()
 	if err != nil {
 		return nil, err

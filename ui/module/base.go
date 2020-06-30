@@ -53,3 +53,11 @@ func (b *moduleBase) Draw(x, y int, im draw.Image) {
 	}
 	b.Root.Draw(x, y, im)
 }
+
+func (b *moduleBase) SendEvent(ev ui.Event) bool {
+	if !b.Base.SendEvent(ev) {
+		return false
+	}
+
+	return b.Root.SendEvent(ev)
+}

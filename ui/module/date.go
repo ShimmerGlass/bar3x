@@ -18,11 +18,16 @@ type Date struct {
 }
 
 func NewDate(p ui.ParentDrawable, mk *markup.Markup, clock *Clock) *Date {
-	return &Date{
+	d := &Date{
 		mk:         mk,
 		clock:      clock,
 		moduleBase: newBase(p),
 	}
+	d.SetOnLeftClick(func(ui.Event) bool {
+		ui.StartCommand("gnome-calendar")
+		return true
+	})
+	return d
 }
 
 func (m *Date) Init() error {

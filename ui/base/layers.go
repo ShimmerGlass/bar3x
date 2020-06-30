@@ -1,6 +1,7 @@
 package base
 
 import (
+	"image"
 	"image/draw"
 
 	"github.com/shimmerglass/bar3x/ui"
@@ -63,6 +64,31 @@ func (c *Layers) ChildContext(i int) ui.Context {
 
 func (c *Layers) Children() []ui.Drawable {
 	return c.inner
+}
+
+func (c *Layers) SendEvent(ev ui.Event) bool {
+	if !c.Base.SendEvent(ev) {
+		return false
+	}
+
+	for _, i := range c.inner {
+		if !i.Visible() {
+			continue
+		}
+		w, h := i.Width(), i.Height()
+		x := (c.width.V - w) / 2
+		y := (c.height.V - h) / 2
+
+		if ev.At.In(image.Rect(x, y, x+w, y+h)) {
+			iev := ev
+			iev.At = ev.At.Sub(image.Pt(x, y))
+			i.SendEvent(iev)
+		}
+
+		y += h
+	}
+
+	return true
 }
 
 func (l *Layers) updateSize() {
