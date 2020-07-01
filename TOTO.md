@@ -1,0 +1,9 @@
+- Expand ~ in paths
+- Error when adding more than one item in containers that do not support it
+- Base64 img
+- Polygon element
+- Mouseover ctx var
+- Cursors
+- General music
+- Battery plugin
+- Default config / theme

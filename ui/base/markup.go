@@ -36,7 +36,7 @@ func RegisterMarkup(mk *markup.Markup) {
 	mk.Register("Icon", func(p ui.ParentDrawable) ui.Drawable {
 		return NewIcon(p)
 	})
-	mk.Register("SeparatorArrow", func(p ui.ParentDrawable) ui.Drawable {
-		return NewSeparatorArrow(p)
+	mk.Register("Pattern", func(p ui.ParentDrawable) ui.Drawable {
+		return NewPattern(p)
 	})
 }
