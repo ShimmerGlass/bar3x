@@ -39,7 +39,7 @@ func (m *Music) Init() error {
 						ref="Placeholder"
 						Width="{bar_height - v_padding * 2}"
 						Height="{bar_height - v_padding * 2}"
-						Color="{inactive_color}"
+						Color="{neutral_color}"
 						Visible="{!$Img.Visible}"
 					/>
 					<Image
@@ -61,7 +61,7 @@ func (m *Music) Init() error {
 					<Bar
 						ref="Progress"
 						FgColor="{accent_color}"
-						BgColor="{inactive_color}"
+						BgColor="{neutral_color}"
 						Height="2"
 						Width="{$TextRow.Width}"
 						Direction="left-right"

@@ -41,7 +41,7 @@ func (m *Volume) Init() error {
 				Radius="2"
 				Direction="left-right"
 				FgColor="{accent_color}"
-				BgColor="{inactive_color}"
+				BgColor="{neutral_color}"
 			/>
 		</Row>
 	`)

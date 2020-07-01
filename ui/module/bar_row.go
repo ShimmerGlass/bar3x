@@ -28,19 +28,19 @@ func (s *sepRowEl) OnVisibleChange(c func(bool)) {
 	s.el.OnVisibleChange(c)
 }
 
-type BarRow struct {
+type ModuleRow struct {
 	*base.Row
 	mk *markup.Markup
 }
 
-func NewSepRow(parent ui.ParentDrawable, mk *markup.Markup) *BarRow {
-	return &BarRow{
+func NewSepRow(parent ui.ParentDrawable, mk *markup.Markup) *ModuleRow {
+	return &ModuleRow{
 		Row: base.NewRow(parent),
 		mk:  mk,
 	}
 }
 
-func (c *BarRow) Add(d ui.Drawable) {
+func (c *ModuleRow) Add(d ui.Drawable) {
 	ctx := c.Parent().ChildContext(0)
 
 	if !ctx.Has("module") {

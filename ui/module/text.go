@@ -36,7 +36,7 @@ func (t *TextUnit) Init() error {
 			/>
 			<Text
 				ref="Unit"
-				Color="{inactive_light_color}"
+				Color="{neutral_light_color}"
 				Font="{text_font}"
 				FontSize="{text_font_size}"
 			/>

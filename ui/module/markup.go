@@ -51,7 +51,7 @@ func RegisterMarkup(mk *markup.Markup, clock *Clock) {
 		return NewRAM(p, mk, clock, pr)
 	})
 
-	mk.Register("BarRow", func(p ui.ParentDrawable) ui.Drawable {
+	mk.Register("ModuleRow", func(p ui.ParentDrawable) ui.Drawable {
 		return NewSepRow(p, mk)
 	})
 

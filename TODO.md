@@ -7,3 +7,5 @@
 - General music
 - Battery plugin
 - Default config / theme
+- Font distribution
+- Handle default monitor for tray

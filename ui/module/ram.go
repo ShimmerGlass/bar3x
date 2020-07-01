@@ -50,7 +50,7 @@ func (m *RAM) Init() error {
 						<Text
 							ref="ProcTxt"
 							MaxWidth="60"
-							Color="{inactive_light_color}"
+							Color="{neutral_light_color}"
 						/>
 					</Sizer>
 				</Row>
@@ -60,7 +60,7 @@ func (m *RAM) Init() error {
 						Height="2"
 						Width="{$TextRow.Width}"
 						Direction="left-right"
-						BgColor="{inactive_color}"
+						BgColor="{neutral_color}"
 						FgColor="{accent_color}"
 					/>
 				</Sizer>

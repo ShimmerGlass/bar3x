@@ -56,7 +56,7 @@ func (m *CPU) Init() error {
 						<Text
 							ref="ProcTxt"
 							MaxWidth="60"
-							Color="{inactive_light_color}"
+							Color="{neutral_light_color}"
 						/>
 					</Sizer>
 				</Row>
@@ -66,7 +66,7 @@ func (m *CPU) Init() error {
 						Height="2"
 						Width="{$TextRow.Width}"
 						Direction="left-right"
-						BgColor="{inactive_color}"
+						BgColor="{neutral_color}"
 						FgColor="{accent_color}"
 					/>
 				</Sizer>
@@ -90,7 +90,7 @@ func (m *CPU) Init() error {
 			<Sizer PaddingLeft="1">
 				<Bar
 					ref="Bar"
-					BgColor="{inactive_color}"
+					BgColor="{neutral_color}"
 					FgColor="{accent_color}"
 					Width="3"
 					Height="{bar_height - v_padding * 2}"
