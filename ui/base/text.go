@@ -59,8 +59,11 @@ func (t *Text) Text() string {
 	return t.text
 }
 func (t *Text) SetText(s string) {
+	old := t.text
 	t.text = s
-	t.updateSize()
+	if s != old {
+		t.updateSize()
+	}
 }
 
 func (t *Text) Font() string {
@@ -153,10 +156,11 @@ func (t *Text) draw(im draw.Image) {
 	fontSize := t.FontSize()
 	col := t.Color()
 
-	if t.drawnText == "" || fontSize == 0 {
+	w, h := t.width.V, t.height.V
+
+	if w == 0 || h == 0 {
 		return
 	}
-	w, h := t.width.V, t.height.V
 
 	rgba := color.RGBAModel.Convert(col).(color.RGBA)
 	surface := cairo.NewSurface(cairo.FORMAT_ARGB32, w, h)
