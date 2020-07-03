@@ -40,7 +40,7 @@ type Spotify struct {
 	Up chan State
 }
 
-func New() *Spotify {
+func New(keyID, keySecret string) *Spotify {
 	conn, err := dbus.SessionBus()
 	if err != nil {
 		log.Fatal("Failed to connect to session bus:", err)
@@ -59,7 +59,7 @@ func New() *Spotify {
 
 	s.clientReady.Add(1)
 	go func() {
-		client, err := spotifyClient()
+		client, err := spotifyClient(keyID, keySecret)
 		if err != nil {
 			log.Println(err)
 			return

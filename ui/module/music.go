@@ -18,7 +18,8 @@ type Music struct {
 
 	mk *markup.Markup
 
-	state spotify.State
+	keyID     string
+	keySecret string
 
 	moduleBase
 }
@@ -75,7 +76,7 @@ func (m *Music) Init() error {
 	}
 
 	go func() {
-		spot := spotify.New()
+		spot := spotify.New(m.keyID, m.keySecret)
 		for s := range spot.Up {
 			if !s.Playing {
 				m.SetVisible(false)
@@ -84,12 +85,11 @@ func (m *Music) Init() error {
 			} else {
 				m.SetVisible(true)
 			}
-			m.state = s
 
-			m.Artist.SetText(m.state.Artist)
-			m.Title.SetText(m.state.Title)
+			m.Artist.SetText(s.Artist)
+			m.Title.SetText(s.Title)
 
-			if m.state.Artist == "" {
+			if s.Artist == "" {
 				m.Artist.SetVisible(false)
 				m.Sep.SetVisible(false)
 			} else {
@@ -97,7 +97,7 @@ func (m *Music) Init() error {
 				m.Sep.SetVisible(true)
 			}
 
-			m.Img.SetImage(m.state.Image)
+			m.Img.SetImage(s.Image)
 			if s.Image == nil {
 				m.Img.SetVisible(false)
 			} else {
@@ -111,4 +111,20 @@ func (m *Music) Init() error {
 	}()
 
 	return nil
+}
+
+// parameters
+
+func (m *Music) SpotifyKeyID() string {
+	return m.keyID
+}
+func (m *Music) SetSpotifyKeyID(v string) {
+	m.keyID = v
+}
+
+func (m *Music) SpotifyKeySecret() string {
+	return m.keySecret
+}
+func (m *Music) SetSpotifyKeySecret(v string) {
+	m.keySecret = v
 }

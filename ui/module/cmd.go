@@ -99,7 +99,7 @@ func (c *Cmd) Init() error {
 func (c *Cmd) Update(ctx context.Context) {
 	stderr := &bytes.Buffer{}
 	stdout := &bytes.Buffer{}
-	cmd := exec.CommandContext(ctx, "/bin/sh", "-c", c.command)
+	cmd := exec.CommandContext(ctx, "/bin/bash", "-c", c.command)
 	cmd.Stderr = stderr
 	cmd.Stdout = stdout
 

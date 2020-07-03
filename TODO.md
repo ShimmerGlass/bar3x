@@ -5,7 +5,14 @@
 - Mouseover ctx var
 - Cursors
 - General music
+- Spotify update flicker
 - Battery plugin
 - Default config / theme
 - Font distribution
 - Handle default monitor for tray
+- Config reload
+- Transitions
+- Unbound refs
+- User event handlers
+- Fix 0 height text bug
+- Do not recompute text height if it did not change

@@ -17,15 +17,22 @@ import (
 type CPU struct {
 	moduleBase
 
-	mk      *markup.Markup
-	clock   *Clock
-	pw      *process.ProcessWatcher
-	PcTxt   *TextUnit
-	ProcTxt *base.Text
-	BarsRow *base.Row
-	TextRow *base.Row
-	Bar     *base.Bar
-	Bars    []*base.Bar
+	mk        *markup.Markup
+	clock     *Clock
+	pw        *process.ProcessWatcher
+	PcTxt     *TextUnit
+	ProcTxt   *base.Text
+	ProcSizer *base.Sizer
+	TextRow   *base.Row
+	Bar       *base.Bar
+	BarSizer  *base.Sizer
+	BarsSizer *base.Sizer
+	BarsRow   *base.Row
+	Bars      []*base.Bar
+
+	perCoreBars bool
+	maxProcess  bool
+	avgBar      bool
 }
 
 func NewCPU(p ui.ParentDrawable, mk *markup.Markup, clock *Clock, pw *process.ProcessWatcher) *CPU {
@@ -34,6 +41,10 @@ func NewCPU(p ui.ParentDrawable, mk *markup.Markup, clock *Clock, pw *process.Pr
 		clock:      clock,
 		pw:         pw,
 		moduleBase: newBase(p),
+
+		perCoreBars: true,
+		maxProcess:  true,
+		avgBar:      true,
 	}
 }
 
@@ -49,6 +60,7 @@ func (m *CPU) Init() error {
 						<TxtUnit ref="PcTxt" />
 					</Sizer>
 					<Sizer
+						ref="ProcSizer"
 						PaddingLeft="{h_padding}"
 						Width="60"
 						HAlign="right"
@@ -60,7 +72,7 @@ func (m *CPU) Init() error {
 						/>
 					</Sizer>
 				</Row>
-				<Sizer PaddingTop="3">
+				<Sizer ref="BarSizer" PaddingTop="3">
 					<Bar
 						ref="Bar"
 						Height="2"
@@ -71,7 +83,7 @@ func (m *CPU) Init() error {
 					/>
 				</Sizer>
 			</Col>
-			<Sizer PaddingLeft="{h_padding}">
+			<Sizer ref="BarsSizer" PaddingLeft="{h_padding}">
 				<Row ref="BarsRow" />
 			</Sizer>
 		</Row>
@@ -114,13 +126,26 @@ func (m *CPU) Update(context.Context) {
 	avg /= float64(len(vals))
 
 	m.PcTxt.Set(m.formatCPU(avg), "%")
-	m.ProcTxt.SetText(m.pw.MaxCPU)
 
-	for i, b := range m.Bars {
-		b.SetValue(vals[i] / 100)
+	if m.maxProcess {
+		m.ProcTxt.SetText(m.pw.MaxCPU)
+	} else {
+		m.ProcSizer.SetVisible(false)
 	}
 
-	m.Bar.SetValue(avg / 100)
+	if m.perCoreBars {
+		for i, b := range m.Bars {
+			b.SetValue(vals[i] / 100)
+		}
+	} else {
+		m.BarsSizer.SetVisible(false)
+	}
+
+	if m.avgBar {
+		m.Bar.SetValue(avg / 100)
+	} else {
+		m.BarSizer.SetVisible(false)
+	}
 }
 
 func (m *CPU) formatCPU(v float64) string {
@@ -134,4 +159,27 @@ func (m *CPU) formatCPU(v float64) string {
 	}
 
 	return usageStr
+}
+
+// parameters
+
+func (m *CPU) ShowPerCoreBars() bool {
+	return m.perCoreBars
+}
+func (m *CPU) SetShowPerCoreBars(v bool) {
+	m.perCoreBars = v
+}
+
+func (m *CPU) ShowMaxProcess() bool {
+	return m.maxProcess
+}
+func (m *CPU) SetShowMaxProcess(v bool) {
+	m.maxProcess = v
+}
+
+func (m *CPU) ShowAvgBar() bool {
+	return m.avgBar
+}
+func (m *CPU) SetShowAvgBar(v bool) {
+	m.avgBar = v
 }

@@ -3,7 +3,6 @@ package module
 import (
 	"context"
 	"fmt"
-	"os"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -25,6 +24,8 @@ type Weather struct {
 	Icon    *base.Text
 
 	location string
+	apiKey   string
+	unit     string
 
 	w *owm.CurrentWeatherData
 }
@@ -34,13 +35,14 @@ func NewWeather(p ui.ParentDrawable, mk *markup.Markup, clock *Clock) *Weather {
 		mk:         mk,
 		clock:      clock,
 		moduleBase: newBase(p),
+		unit:       "C",
 	}
 }
 
 func (m *Weather) Init() error {
-	w, err := owm.NewCurrent("C", "en", os.Getenv("OWM_API_KEY"))
+	w, err := owm.NewCurrent(m.unit, "en", m.apiKey)
 	if err != nil {
-		log.Println(err)
+		return err
 	}
 	if err != nil {
 		return err
@@ -61,14 +63,6 @@ func (m *Weather) Init() error {
 
 	m.clock.Add(m, 30*time.Minute)
 	return nil
-}
-
-func (m *Weather) Location() string {
-	return m.location
-}
-
-func (m *Weather) SetLocation(v string) {
-	m.location = v
 }
 
 func (m *Weather) Update(context.Context) {
@@ -120,4 +114,27 @@ func (m *Weather) Update(context.Context) {
 	m.Icon.SetText(icon)
 	m.TempTxt.Set(fmt.Sprintf("%.1f", m.w.Main.Temp), "°")
 	m.SetVisible(true)
+}
+
+// parameters
+
+func (m *Weather) Location() string {
+	return m.location
+}
+func (m *Weather) SetLocation(v string) {
+	m.location = v
+}
+
+func (m *Weather) ApiKey() string {
+	return m.apiKey
+}
+func (m *Weather) SetApiKey(v string) {
+	m.apiKey = v
+}
+
+func (m *Weather) Unit() string {
+	return m.unit
+}
+func (m *Weather) SetUnit(v string) {
+	m.unit = v
 }

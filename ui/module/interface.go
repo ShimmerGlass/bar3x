@@ -8,6 +8,7 @@ import (
 
 	"github.com/shimmerglass/bar3x/lib/bandwidth"
 	"github.com/shimmerglass/bar3x/ui"
+	"github.com/shimmerglass/bar3x/ui/base"
 	"github.com/shimmerglass/bar3x/ui/markup"
 )
 
@@ -16,11 +17,14 @@ type Interface struct {
 
 	mk    *markup.Markup
 	clock *Clock
-
-	iface string
 	bw    *bandwidth.BW
 
-	Transfer *transfer
+	iface     string
+	showLabel bool
+
+	Transfer   *transfer
+	Label      *base.Text
+	LabelSizer *base.Sizer
 }
 
 func NewInterface(p ui.ParentDrawable, mk *markup.Markup, clock *Clock) *Interface {
@@ -28,12 +32,16 @@ func NewInterface(p ui.ParentDrawable, mk *markup.Markup, clock *Clock) *Interfa
 		mk:         mk,
 		clock:      clock,
 		moduleBase: newBase(p),
+		showLabel:  true,
 	}
 }
 
 func (m *Interface) Init() error {
 	_, err := m.mk.Parse(m, m, `
 		<Row ref="Root">
+			<Sizer ref="LabelSizer" PaddingRight="{h_padding}">
+				<Text ref="Label" Color="{accent_color}" />
+			</Sizer>
 			<Transfer ref="Transfer" />
 		</Row>
 	`)
@@ -43,14 +51,6 @@ func (m *Interface) Init() error {
 
 	m.clock.Add(m, time.Second)
 	return nil
-}
-
-func (m *Interface) Iface() string {
-	return m.iface
-}
-func (m *Interface) SetIface(s string) {
-	m.iface = s
-	m.bw = bandwidth.New(s)
 }
 
 func (m *Interface) Update(context.Context) {
@@ -65,4 +65,27 @@ func (m *Interface) Update(context.Context) {
 	}
 
 	m.Transfer.Set(rw, tx)
+
+	if m.showLabel {
+		m.Label.SetText(m.iface)
+	} else {
+		m.LabelSizer.SetVisible(false)
+	}
+}
+
+// parameters
+
+func (m *Interface) Iface() string {
+	return m.iface
+}
+func (m *Interface) SetIface(s string) {
+	m.iface = s
+	m.bw = bandwidth.New(s)
+}
+
+func (m *Interface) ShowLabel() bool {
+	return m.showLabel
+}
+func (m *Interface) SetShowLabel(v bool) {
+	m.showLabel = v
 }

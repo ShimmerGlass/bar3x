@@ -2,11 +2,13 @@ package module
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	log "github.com/sirupsen/logrus"
 
 	"github.com/shimmerglass/bar3x/ui"
+	"github.com/shimmerglass/bar3x/ui/base"
 	"github.com/shimmerglass/bar3x/ui/markup"
 	"github.com/shirou/gopsutil/disk"
 )
@@ -17,11 +19,16 @@ type DiskBandwidth struct {
 	mk    *markup.Markup
 	clock *Clock
 
-	devs  []string
+	devs      []string
+	showLabel bool
+	unit      string
+
 	lastT time.Time
 	last  map[string]disk.IOCountersStat
 
-	Transfer *transfer
+	Transfer   *transfer
+	Label      *base.Text
+	LabelSizer *base.Sizer
 }
 
 func NewDiskBW(p ui.ParentDrawable, mk *markup.Markup, clock *Clock) *DiskBandwidth {
@@ -30,12 +37,16 @@ func NewDiskBW(p ui.ParentDrawable, mk *markup.Markup, clock *Clock) *DiskBandwi
 		clock:      clock,
 		moduleBase: newBase(p),
 		last:       map[string]disk.IOCountersStat{},
+		showLabel:  true,
 	}
 }
 
 func (m *DiskBandwidth) Init() error {
 	_, err := m.mk.Parse(m, m, `
 		<Row ref="Root">
+			<Sizer ref="LabelSizer" PaddingRight="{h_padding}">
+				<Text ref="Label" Color="{accent_color}" />
+			</Sizer>
 			<Transfer ref="Transfer" />
 		</Row>
 	`)
@@ -45,14 +56,6 @@ func (m *DiskBandwidth) Init() error {
 
 	m.clock.Add(m, time.Second)
 	return nil
-}
-
-func (m *DiskBandwidth) Devs() []string {
-	return m.devs
-}
-
-func (m *DiskBandwidth) SetDevs(v []string) {
-	m.devs = v
 }
 
 func (m *DiskBandwidth) Update(context.Context) {
@@ -78,6 +81,40 @@ func (m *DiskBandwidth) Update(context.Context) {
 		}
 	}
 
+	if m.unit == "bits" {
+		readPs *= 8
+		writePs *= 8
+	}
+
 	m.lastT = time.Now()
 	m.Transfer.Set(int(readPs), int(writePs))
+
+	if m.showLabel {
+		m.Label.SetText(strings.Join(m.devs, ","))
+	} else {
+		m.LabelSizer.SetVisible(false)
+	}
+}
+
+// parameters
+
+func (m *DiskBandwidth) ShowLabel() bool {
+	return m.showLabel
+}
+func (m *DiskBandwidth) SetShowLabel(v bool) {
+	m.showLabel = v
+}
+
+func (m *DiskBandwidth) Unit() string {
+	return m.unit
+}
+func (m *DiskBandwidth) SetUnit(v string) {
+	m.unit = v
+}
+
+func (m *DiskBandwidth) Devs() []string {
+	return m.devs
+}
+func (m *DiskBandwidth) SetDevs(v []string) {
+	m.devs = v
 }

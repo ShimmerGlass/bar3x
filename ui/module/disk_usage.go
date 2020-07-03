@@ -19,6 +19,8 @@ type DiskUsage struct {
 	clock *Clock
 
 	Txt *TextUnit
+
+	mountPoint string
 }
 
 func NewDiskUsage(p ui.ParentDrawable, mk *markup.Markup, clock *Clock) *DiskUsage {
@@ -26,6 +28,7 @@ func NewDiskUsage(p ui.ParentDrawable, mk *markup.Markup, clock *Clock) *DiskUsa
 		mk:         mk,
 		clock:      clock,
 		moduleBase: newBase(p),
+		mountPoint: "/",
 	}
 }
 
@@ -59,4 +62,13 @@ func (m *DiskUsage) Update(context.Context) {
 	}
 
 	m.Txt.Set(fmt.Sprintf("%.0f", p), "%")
+}
+
+// parameters
+
+func (m *DiskUsage) MountPoint() string {
+	return m.mountPoint
+}
+func (m *DiskUsage) SetMountPoint(v string) {
+	m.mountPoint = v
 }

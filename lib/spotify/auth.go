@@ -18,16 +18,16 @@ import (
 
 const spotifyRedirectURI = "http://localhost:8080/callback"
 
-var spotifyAuthenticator = spotify.NewAuthenticator(spotifyRedirectURI,
+var spotifyScopes = []string{
 	spotify.ScopeUserReadPrivate,
 	spotify.ScopePlaylistReadPrivate,
 	spotify.ScopeUserLibraryRead,
 	spotify.ScopeUserLibraryModify,
 	spotify.ScopeUserReadCurrentlyPlaying,
 	spotify.ScopeUserReadPlaybackState,
-)
+}
 
-func spotifyClient() (*spotify.Client, error) {
+func spotifyClient(keyID, keySecret string) (*spotify.Client, error) {
 	usr, err := user.Current()
 	if err != nil {
 		return nil, err
@@ -35,7 +35,7 @@ func spotifyClient() (*spotify.Client, error) {
 
 	tokenFilePath := path.Join(usr.HomeDir, ".spotify")
 
-	client, err := spotifyClientSaved(tokenFilePath)
+	client, err := spotifyClientSaved(tokenFilePath, keyID, keySecret)
 	if err == nil && client != nil {
 		return client, nil
 	}
@@ -43,7 +43,7 @@ func spotifyClient() (*spotify.Client, error) {
 		log.Println(err)
 	}
 
-	client, err = spotifyClientAcquire()
+	client, err = spotifyClientAcquire(keyID, keySecret)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +69,10 @@ func spotifyClient() (*spotify.Client, error) {
 	return client, nil
 }
 
-func spotifyClientSaved(path string) (*spotify.Client, error) {
+func spotifyClientSaved(path string, keyID, keySecret string) (*spotify.Client, error) {
+	spotifyAuthenticator := spotify.NewAuthenticator(spotifyRedirectURI)
+	spotifyAuthenticator.SetAuthInfo(keyID, keySecret)
+
 	tokenFile, err := os.Open(path)
 	if err != nil {
 		if !os.IsNotExist(err) {
@@ -88,7 +91,10 @@ func spotifyClientSaved(path string) (*spotify.Client, error) {
 	return &client, nil
 }
 
-func spotifyClientAcquire() (*spotify.Client, error) {
+func spotifyClientAcquire(keyID, keySecret string) (*spotify.Client, error) {
+	spotifyAuthenticator := spotify.NewAuthenticator(spotifyRedirectURI)
+	spotifyAuthenticator.SetAuthInfo(keyID, keySecret)
+
 	ch := make(chan spotify.Client)
 	state := "abc123"
 

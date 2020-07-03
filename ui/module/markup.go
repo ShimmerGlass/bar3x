@@ -28,8 +28,8 @@ func RegisterMarkup(mk *markup.Markup, clock *Clock) {
 		return NewCPU(p, mk, clock, pr)
 	})
 
-	mk.Register("Date", func(p ui.ParentDrawable) ui.Drawable {
-		return NewDate(p, mk, clock)
+	mk.Register("DateTime", func(p ui.ParentDrawable) ui.Drawable {
+		return NewDateTime(p, mk, clock)
 	})
 
 	mk.Register("DiskBandwidth", func(p ui.ParentDrawable) ui.Drawable {
