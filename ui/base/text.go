@@ -4,19 +4,15 @@ import (
 	"image"
 	"image/color"
 	"image/draw"
-	"math"
-	"strings"
-	"unicode/utf8"
+	"log"
 
+	"github.com/segmentio/fasthash/fnv1a"
 	"github.com/shimmerglass/bar3x/ui"
 	"github.com/shimmerglass/bar3x/ui/cache"
-	"github.com/ungerik/go-cairo"
 )
 
-const heightChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-
 type textCacheKey struct {
-	font     string
+	font     uint64
 	fontSize float64
 	color    color.Color
 	text     string
@@ -29,6 +25,7 @@ type Text struct {
 	defaultFontKey     string
 	defaultFontSizeKey string
 
+	fontKey     uint64
 	setFont     string
 	setFontSize float64
 	setColor    color.Color
@@ -53,6 +50,22 @@ func NewIcon(p ui.ParentDrawable) *Text {
 		defaultFontKey:     "icon_font",
 		defaultFontSizeKey: "icon_font_size",
 	}
+}
+
+func (t *Text) Init() error {
+	// this prevents to change to font after the text element is created
+	// but this is an unlikely usage and allows for cache optimizations
+	font := t.Font()
+
+	// we spend a long time hashing font base64 for modules such as Cmd
+	// that create Text element often. Hashing the first 512 bytes seems
+	// to work
+	if len(font) > 512 {
+		font = font[:512]
+	}
+	t.fontKey = fnv1a.HashString64(font)
+
+	return nil
 }
 
 func (t *Text) Text() string {
@@ -107,7 +120,6 @@ func (t *Text) SetMaxWidth(i int) {
 }
 
 func (t *Text) updateSize() {
-	font := t.Font()
 	fontSize := t.FontSize()
 
 	if t.text == "" || fontSize == 0 {
@@ -116,32 +128,23 @@ func (t *Text) updateSize() {
 		return
 	}
 
-	surface := cairo.NewSurface(cairo.FORMAT_ARGB32, 0, 0)
-	defer surface.Destroy()
-
-	surface.SelectFontFace(font, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
-	surface.SetFontSize(fontSize)
-
-	t.drawnText = t.text
-	exX := surface.TextExtents(t.text)
-	exY := surface.TextExtents(heightChars)
-
-	max := float64(t.maxWidth)
-	txt := t.text
-	for t.maxWidth > 0 && exX.Xadvance > max {
-		_, s := utf8.DecodeLastRuneInString(txt)
-		txt = strings.TrimSpace(txt[:len(txt)-s])
-		t.drawnText = txt + "…"
-		exX = surface.TextExtents(t.drawnText)
+	w, h, drawnText, err := textSize(t.text, textOptions{
+		font:     t.Font(),
+		fontKey:  t.fontKey,
+		fontSize: fontSize,
+		maxWidth: t.maxWidth,
+	})
+	if err != nil {
+		log.Fatal(err)
 	}
-
-	t.width.Set(int(math.Ceil(exX.Xadvance)))
-	t.height.Set(int(math.Ceil(fontSize + (exY.Height + exY.Ybearing))))
+	t.width.Set(w)
+	t.height.Set(h)
+	t.drawnText = drawnText
 }
 
 func (t *Text) Draw(x, y int, im draw.Image) {
 	k := textCacheKey{
-		font:     t.Font(),
+		font:     t.fontKey,
 		fontSize: t.FontSize(),
 		color:    t.Color(),
 		text:     t.drawnText,
@@ -152,35 +155,25 @@ func (t *Text) Draw(x, y int, im draw.Image) {
 }
 
 func (t *Text) draw(im draw.Image) {
-	font := t.Font()
-	fontSize := t.FontSize()
-	col := t.Color()
-
 	w, h := t.width.V, t.height.V
-
 	if w == 0 || h == 0 {
 		return
 	}
 
-	rgba := color.RGBAModel.Convert(col).(color.RGBA)
-	surface := cairo.NewSurface(cairo.FORMAT_ARGB32, w, h)
-	defer surface.Destroy()
-
-	surface.SelectFontFace(font, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
-	surface.SetFontSize(fontSize)
-	surface.SetSourceRGBA(
-		float64(rgba.R)/255,
-		float64(rgba.G)/255,
-		float64(rgba.B)/255,
-		float64(rgba.A)/255,
-	)
-	surface.MoveTo(0, fontSize)
-	surface.ShowText(t.drawnText)
+	img, err := renderText(t.drawnText, w, h, textOptions{
+		font:     t.Font(),
+		fontKey:  t.fontKey,
+		fontSize: t.FontSize(),
+		color:    t.Color(),
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	draw.Draw(
 		im,
 		image.Rect(0, 0, w, h),
-		surface.GetImage(),
+		img,
 		image.Point{},
 		draw.Over,
 	)

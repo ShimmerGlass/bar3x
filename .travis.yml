@@ -5,6 +5,8 @@ env: GO111MODULE=on
 before_install:
   - sudo apt-get -y install libcairo-dev
 script:
+  - "go get -u github.com/jteeuwen/go-bindata/..."
+  - "go generate ./..."
   - "go build"
   - "tar czf bar3x-${TRAVIS_TAG}.tar.gz bar3x"
 deploy:

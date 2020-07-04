@@ -7,8 +7,6 @@
 - General music
 - Spotify update flicker
 - Battery plugin
-- Default config / theme
-- Font distribution
 - Handle default monitor for tray
 - Config reload
 - Transitions

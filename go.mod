@@ -21,12 +21,12 @@ require (
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/errors v0.9.1
+	github.com/segmentio/fasthash v1.0.2
 	github.com/shirou/gopsutil v2.20.5+incompatible
 	github.com/sirupsen/logrus v1.6.0
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 	github.com/sqp/pulseaudio v0.0.0-20180916175200-29ac6bfa231c
 	github.com/stretchr/testify v1.6.1
-	github.com/ungerik/go-cairo v0.0.0-20191014050614-4a03f432a432
 	github.com/zmb3/spotify v0.0.0-20200525010707-bc712583571e
 	golang.org/x/image v0.0.0-20200430140353-33d19683fad8 // indirect
 	golang.org/x/net v0.0.0-20190620200207-3b0461eec859 // indirect

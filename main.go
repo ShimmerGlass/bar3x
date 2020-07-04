@@ -17,10 +17,11 @@ import (
 )
 
 func main() {
-	cfgPath := flag.String("config", "config.yaml", "YAML Config file path")
+	cfgPath := flag.String("config", "", "YAML Config file path")
+	themePath := flag.String("theme", "", "YAML Theme file path")
 	flag.Parse()
 
-	cfg, err := getConfig(*cfgPath)
+	cfg, err := getConfig(*cfgPath, *themePath)
 	if err != nil {
 		log.Fatal(err)
 	}
