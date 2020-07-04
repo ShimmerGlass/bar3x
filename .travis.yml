@@ -1,0 +1,19 @@
+language: go
+go:
+  - 1.x
+env: GO111MODULE=on
+before_install:
+  - sudo apt-get -y install libcairo-dev
+script:
+  - "go build"
+  - "tar czf bar3x-${TRAVIS_TAG}.tar.gz bar3x"
+deploy:
+  provider: releases
+  api_key:
+    secure: sYjzZsD2lmWruRW63JdEaO2oVgHeeNt/Mq4JPnf0qp/DJaWrhRxfdk7S8N4EFNcKYdcYrnCFFgKAPrG89wt7NcXtbJ38hH5g0RsSRvaE4k7uXnJrP2LklpE5ILd4nzwzqSE90T8+3A7KAbsG06XCI6+QynZW0bPup3EndK4cz9id1vXcMrXcCxw8EVT36oIH4SREaHE3ehv1+o6CAvKGemJzjy11QWsnmPIE+QeHs3Tsm2P7CXIRq6KIGVQzk9zRggNOjD4ccnM6hImav36OogHMm+fdcFCs6JOdMw8bUxFrujQwYXeyhxsEIiCwXLIakodCUmxDHlS9G7w6FJs0ii2Wak/tFyHUClwAbTGqOkDJ/bPUjZ7XuegXwT66TvtsgoDidMS83t2rp/KrJ6rXV6in1dIf98Lx3bz3PVTJFjPbusjqSjKO/vuZo4SGBekUWpcQ+48ZDoUB5h/pNvHyjn1dxMvTIACg/yQO3fNfBV/Vy5lx+VKXAaqV5LM3xYepZXEXf9wGkJEsJxNXzNWA1AKeQVnnqjQDrxzDimzom/M988QtJtRcEimRg9ptNdwWKCeUp+g2IxPccqF4XvmmeCQov2vTUEWQ4VrkpNZswmwzjPZgWU3cVqOmWaQrAA1tUAiUuAiV3ao752WL1i7pf47FPZZbCYvE9wbf5Bc8gJo=
+  file: "*.tar.gz"
+  file_glob: true
+  skip_cleanup: true
+  on:
+    repo: ShimmerGlass/bar3x
+    tags: true
