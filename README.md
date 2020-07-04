@@ -26,18 +26,6 @@ go get github.com/ShimmerGlass/bar3x
   - Fedora: `yum install cairo`
   - Arch: `pacman -S cairo`
 
-### Fonts
-`bar3x` uses Noto for text and NerdFont for icons by default
-
-- Noto: 
-  - Debian/Ubuntu: `apt install fonts-noto`
-  - Fedora: `yum install google-noto-fonts`
-  - Arch: `pacman -S noto-fonts`
-- NerdFont
-  - Arch: `pacman -S nerd-fonts-noto`
-  - Others 
-
-
 ## Quick Start
 
 `bar3x` comes with a default configuration, and can be customized using `bar3x -config config.yaml` to change part or all of these parameters.
