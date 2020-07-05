@@ -4,6 +4,8 @@ go:
 env: GO111MODULE=on
 before_install:
   - sudo apt-get -y install libcairo-dev
+install:
+  - true # prevent travis from installing dependencies now
 script:
   - "go get -u github.com/jteeuwen/go-bindata/..."
   - "go generate ./..."
