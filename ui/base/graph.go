@@ -20,7 +20,10 @@ type Graph struct {
 }
 
 func NewGraph(p ui.ParentDrawable) *Graph {
-	return &Graph{Base: NewBase(p)}
+	return &Graph{
+		Base:      NewBase(p),
+		direction: GraphDirUp,
+	}
 }
 
 func (b *Graph) SetWidth(v int) {
