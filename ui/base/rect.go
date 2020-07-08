@@ -101,8 +101,8 @@ func (r *Rect) updateSize() {
 		}
 	}
 
-	r.SetWidth(w)
-	r.SetHeight(h)
+	r.width.Set(w)
+	r.height.Set(h)
 }
 
 func (r *Rect) Draw(x, y int, im draw.Image) {
