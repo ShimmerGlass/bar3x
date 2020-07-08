@@ -19,6 +19,7 @@ import (
 func main() {
 	cfgPath := flag.String("config", "", "YAML Config file path")
 	themePath := flag.String("theme", "", "YAML Theme file path")
+	debug := flag.Bool("debug", false, "Enable profile server on port 6060")
 	flag.Parse()
 
 	cfg, err := getConfig(*cfgPath, *themePath)
@@ -46,9 +47,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	go func() {
-		log.Println(http.ListenAndServe("localhost:6060", nil))
-	}()
+	if *debug {
+		go func() {
+			log.Println(http.ListenAndServe("localhost:6060", nil))
+		}()
+	}
 
 	xevent.Main(X)
 }
