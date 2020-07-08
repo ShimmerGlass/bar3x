@@ -131,7 +131,7 @@ func NewBar(
 		Buf:     ximg,
 		padding: ctx.MustInt("h_padding"),
 		height:  h,
-		ctx:     ctx,
+		ctx:     ctx.New(ui.Context{"display": screen.Outputs[0]}),
 		screen:  screen,
 		mk:      mk,
 	}
