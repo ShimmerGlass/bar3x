@@ -62,3 +62,7 @@ bar_right: |
     <DiskUsage MountPoint="/" />
   </ModuleRow>
 ```
+
+## Customizing
+
+Much more that the colors can be customized, see this [Wiki page](https://github.com/ShimmerGlass/bar3x/wiki/Customizing) on how to cutomize your bar.
