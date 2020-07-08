@@ -60,7 +60,12 @@ func (b *Bars) createBars() error {
 		return err
 	}
 
-	trayOutput := b.ctx.MustString("tray_output")
+	var trayOutput string
+	if b.ctx.Has("tray_output") {
+		trayOutput = b.ctx.MustString("tray_output")
+	} else {
+		trayOutput = screens[0].Outputs[0]
+	}
 	trayCreated := false
 
 	for _, s := range screens {

@@ -26,7 +26,6 @@ func mustB64Asset(path string) string {
 
 func init() {
 	defaultCtx = ui.Context{
-		"tray_output":       "DVI-I-1", // TODO: fix default
 		"tray_icon_size":    20,
 		"tray_icon_padding": 2,
 
