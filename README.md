@@ -3,7 +3,7 @@
 ![image](https://user-images.githubusercontent.com/1712219/86497905-c0216180-bd83-11ea-85e5-e4ed926d2d50.png)
 
 `bar3x` is an easy to use and powerful status bar for your Linux desktop written in Golang.
-Linux status bars typically choose between highly customizable text and richt graphics. `bar3x` takes a slightly different approach by providing a simple markup language for its configuration that allows for :
+Linux status bars typically choose between highly customizable text and rich graphics. `bar3x` takes a slightly different approach by providing a simple markup language for its configuration that allows for :
 
 - Easy addition of new built-in modules
 - Rich external command modules
