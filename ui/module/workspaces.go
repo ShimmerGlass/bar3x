@@ -110,7 +110,7 @@ func (m *Workspaces) update() {
 		j++
 	}
 
-	for i := len(wks); i < len(m.els); i++ {
+	for i := j; i < len(m.els); i++ {
 		m.els[i].Root.SetVisible(false)
 	}
 
