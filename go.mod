@@ -26,7 +26,6 @@ require (
 	github.com/shirou/gopsutil v2.20.5+incompatible
 	github.com/sirupsen/logrus v1.6.0
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
-	github.com/smallnest/ringbuffer v0.0.0-20201021141743-dc0a6f7571a3
 	github.com/sqp/pulseaudio v0.0.0-20180916175200-29ac6bfa231c
 	github.com/stretchr/testify v1.6.1
 	github.com/zmb3/spotify v0.0.0-20200525010707-bc712583571e
