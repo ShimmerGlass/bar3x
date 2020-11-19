@@ -9,6 +9,7 @@ require (
 	github.com/BurntSushi/xgbutil v0.0.0-20190907113008-ad855c713046
 	github.com/PaesslerAG/gval v1.0.1
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
+	github.com/TheCreeper/go-notify v0.0.0-20160203001056-b5cd14745a5c
 	github.com/Wifx/gonetworkmanager v0.2.0
 	github.com/briandowns/openweathermap v0.16.0
 	github.com/fogleman/gg v1.3.0
@@ -25,6 +26,7 @@ require (
 	github.com/shirou/gopsutil v2.20.5+incompatible
 	github.com/sirupsen/logrus v1.6.0
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
+	github.com/smallnest/ringbuffer v0.0.0-20201021141743-dc0a6f7571a3
 	github.com/sqp/pulseaudio v0.0.0-20180916175200-29ac6bfa231c
 	github.com/stretchr/testify v1.6.1
 	github.com/zmb3/spotify v0.0.0-20200525010707-bc712583571e
