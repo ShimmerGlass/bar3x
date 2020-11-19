@@ -13,7 +13,7 @@ import (
 )
 
 type workspaceIndicator struct {
-	Root      ui.Drawable
+	Root      *base.Sizer
 	Rect      *base.Rect
 	Text      *base.Text
 	Indicator *base.Rect
@@ -101,9 +101,9 @@ func (m *Workspaces) update() {
 		el.Root.SetVisible(true)
 
 		func(name string) {
-			el.Rect.SetOnLeftClick(func(ui.Event) bool {
+			el.Root.SetOnLeftClick(func(ui.Event) bool {
 				i3.RunCommand(fmt.Sprintf("workspace %s", name))
-				return true
+				return false
 			})
 		}(wk.Name)
 
