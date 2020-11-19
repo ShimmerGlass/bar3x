@@ -15,6 +15,7 @@ import (
 	"github.com/BurntSushi/xgbutil/xevent"
 	"github.com/BurntSushi/xgbutil/xgraphics"
 	"github.com/BurntSushi/xgbutil/xwindow"
+	"github.com/shimmerglass/bar3x/tray"
 	"github.com/shimmerglass/bar3x/ui"
 	"github.com/shimmerglass/bar3x/ui/base"
 	"github.com/shimmerglass/bar3x/ui/markup"
@@ -24,6 +25,7 @@ import (
 )
 
 type Bar struct {
+	x   *xgbutil.XUtil
 	Win xproto.Window
 	Buf *xgraphics.Image
 
@@ -32,6 +34,7 @@ type Bar struct {
 	screen     x.Screen
 	ctx        ui.Context
 	background *ui.Root
+	mk         *markup.Markup
 
 	TrayWidth int
 	padding   int
@@ -50,7 +53,8 @@ func NewBar(
 	ctx ui.Context,
 	X *xgbutil.XUtil,
 	screen x.Screen,
-	left, center, right *ui.Root,
+	mk *markup.Markup,
+	widthTray bool,
 ) (*Bar, error) {
 	w, h := screen.Width, ctx.MustInt("bar_height")
 
@@ -122,16 +126,14 @@ func NewBar(
 	ximg := xgraphics.New(X, image.Rect(0, 0, w, h))
 
 	b := &Bar{
+		x:       X,
 		Win:     win.Id,
 		Buf:     ximg,
 		padding: ctx.MustInt("h_padding"),
 		height:  h,
 		ctx:     ctx,
 		screen:  screen,
-
-		LeftRoot:   left,
-		CenterRoot: center,
-		RightRoot:  right,
+		mk:      mk,
 	}
 
 	// events
@@ -163,7 +165,84 @@ func NewBar(
 		return nil, err
 	}
 
+	err = b.createRoots()
+	if err != nil {
+		return nil, err
+	}
+
+	if widthTray {
+		err = b.createTray(screen)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return b, nil
+}
+
+func (b *Bar) createRoots() error {
+	if b.ctx.Has("bar_left") {
+		ctx := b.ctx.New(ui.Context{"bar_align": "left"})
+		b.LeftRoot = ui.NewRoot(ctx, func() {
+			b.LeftRoot.Paint()
+			b.PaintLeft(b.LeftRoot.Image())
+		})
+	}
+
+	if b.ctx.Has("bar_center") {
+		ctx := b.ctx.New(ui.Context{"bar_align": "center"})
+		b.CenterRoot = ui.NewRoot(ctx, func() {
+			b.CenterRoot.Paint()
+			b.PaintCenter(b.CenterRoot.Image())
+		})
+	}
+
+	if b.ctx.Has("bar_right") {
+		ctx := b.ctx.New(ui.Context{"bar_align": "right"})
+		b.RightRoot = ui.NewRoot(ctx, func() {
+			b.RightRoot.Paint()
+			b.PaintRight(b.RightRoot.Image())
+		})
+	}
+
+	modules, err := b.mk.Parse(b.LeftRoot, nil, b.ctx.MustString("bar_left"))
+	if err != nil {
+		return fmt.Errorf("config: bar_left: %w", err)
+	}
+	b.LeftRoot.Inner = modules
+
+	modules, err = b.mk.Parse(b.CenterRoot, nil, b.ctx.MustString("bar_center"))
+	if err != nil {
+		return fmt.Errorf("config: bar_center: %w", err)
+	}
+	b.CenterRoot.Inner = modules
+
+	modules, err = b.mk.Parse(b.RightRoot, nil, b.ctx.MustString("bar_right"))
+	if err != nil {
+		return fmt.Errorf("config: bar_right: %w", err)
+	}
+	b.RightRoot.Inner = modules
+
+	return nil
+}
+
+func (b *Bar) createTray(screen x.Screen) error {
+	tr := tray.New(
+		b.x,
+		b.Win,
+		tray.Config{
+			BarWidth:        screen.Width,
+			BarHeight:       b.ctx.MustInt("bar_height"),
+			IconSize:        b.ctx.MustInt("tray_icon_size"),
+			IconPadding:     b.ctx.MustInt("tray_icon_padding"),
+			BackgroundColor: b.ctx.MustColor("bg_color"),
+		},
+		func(s tray.State) {
+			b.SetTrayWidth(s.Width)
+			b.RightRoot.Notify()
+		},
+	)
+	return tr.Init()
 }
 
 func (b *Bar) initBackground() error {

@@ -7,19 +7,20 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/shimmerglass/bar3x/lib/cpu"
 	"github.com/shimmerglass/bar3x/lib/process"
 	"github.com/shimmerglass/bar3x/ui"
 	"github.com/shimmerglass/bar3x/ui/base"
 	"github.com/shimmerglass/bar3x/ui/markup"
-	"github.com/shirou/gopsutil/cpu"
 )
 
 type CPU struct {
 	moduleBase
 
-	mk        *markup.Markup
-	clock     *Clock
-	pw        *process.ProcessWatcher
+	mk    *markup.Markup
+	clock *Clock
+	pw    *process.ProcessWatcher
+
 	PcTxt     *TextUnit
 	ProcTxt   *base.Text
 	ProcSizer *base.Sizer
@@ -114,18 +115,22 @@ func (m *CPU) Init() error {
 	}
 
 	m.clock.Add(m, time.Second)
+	cpu.Start()
 	return nil
 }
 
 func (m *CPU) Update(context.Context) {
-	vals, _ := cpu.Percent(0, true)
-	avg := 0.0
-	for _, v := range vals {
-		avg += v
-	}
-	avg /= float64(len(vals))
+	usage := cpu.Read()
 
-	m.PcTxt.Set(m.formatCPU(avg), "%")
+	avg := 0.0
+	if len(usage) > 0 {
+		for _, v := range usage {
+			avg += v
+		}
+		avg /= float64(len(usage))
+	}
+
+	m.PcTxt.Set(m.formatCPU(avg*100), "%")
 
 	if m.maxProcess {
 		m.ProcTxt.SetText(m.pw.MaxCPU)
@@ -134,15 +139,15 @@ func (m *CPU) Update(context.Context) {
 	}
 
 	if m.perCoreBars {
-		for i, b := range m.Bars {
-			b.SetValue(vals[i] / 100)
+		for i, v := range usage {
+			m.Bars[i].SetValue(v)
 		}
 	} else {
 		m.BarsSizer.SetVisible(false)
 	}
 
 	if m.avgBar {
-		m.Bar.SetValue(avg / 100)
+		m.Bar.SetValue(avg)
 	} else {
 		m.BarSizer.SetVisible(false)
 	}
