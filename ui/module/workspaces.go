@@ -16,6 +16,7 @@ type workspaceIndicator struct {
 	Root      *base.Sizer
 	Rect      *base.Rect
 	Text      *base.Text
+	Content   *base.Sizer
 	Indicator *base.Rect
 }
 
@@ -127,6 +128,7 @@ func (m *Workspaces) addIndicator() {
 			<Rect ref="Rect">
 				<Col>
 					<Sizer
+						ref="Content"
 						Height="{bar_height - v_padding * 2}"
 						PaddingLeft="{h_padding}"
 						PaddingRight="{h_padding}"
@@ -136,7 +138,7 @@ func (m *Workspaces) addIndicator() {
 					<Rect
 						ref="Indicator"
 						Height="2"
-						Width="{$Rect.Width}"
+						Width="{$Content.Width}"
 					/>
 				</Col>
 			</Rect>
