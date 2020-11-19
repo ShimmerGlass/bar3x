@@ -33,10 +33,14 @@ func Screens(X *xgb.Conn) ([]Screen, error) {
 	res := []Screen{}
 
 	// Iterate through all of the crtcs and show some of their info.
+NextCrtc:
 	for _, crtc := range resources.Crtcs {
 		info, err := randr.GetCrtcInfo(X, crtc, 0).Reply()
 		if err != nil {
 			return nil, fmt.Errorf("x get crtc: %w", err)
+		}
+		if len(info.Outputs) == 0 {
+			continue NextCrtc
 		}
 
 		outputNames := []string{}

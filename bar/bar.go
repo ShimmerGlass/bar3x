@@ -59,7 +59,11 @@ func NewBar(
 		return nil, fmt.Errorf("x generate: %w", err)
 	}
 
-	win.Create(X.RootWin(), screen.X, screen.Y, w, h, 0)
+	log.Infof("x creating window x=%d y=%d w=%d h=%d", screen.X, screen.Y, w, h)
+	err = win.CreateChecked(X.RootWin(), screen.X, screen.Y, w, h, 0)
+	if err != nil {
+		return nil, fmt.Errorf("x create: %w", err)
+	}
 
 	// Make this window close gracefully.
 	win.WMGracefulClose(func(w *xwindow.Window) {
