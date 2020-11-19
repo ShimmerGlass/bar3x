@@ -1,6 +1,8 @@
 package x
 
 import (
+	"fmt"
+
 	"github.com/BurntSushi/xgb"
 	"github.com/BurntSushi/xgb/randr"
 	"github.com/BurntSushi/xgb/xproto"
@@ -34,14 +36,14 @@ func Screens(X *xgb.Conn) ([]Screen, error) {
 	for _, crtc := range resources.Crtcs {
 		info, err := randr.GetCrtcInfo(X, crtc, 0).Reply()
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("x get crtc: %w", err)
 		}
 
 		outputNames := []string{}
 		for _, out := range info.Outputs {
 			output, err := randr.GetOutputInfo(X, out, 0).Reply()
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("x get output info: %w", err)
 			}
 			outputNames = append(outputNames, string(output.Name))
 		}

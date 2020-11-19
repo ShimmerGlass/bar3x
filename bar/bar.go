@@ -56,7 +56,7 @@ func NewBar(
 
 	win, err := xwindow.Generate(X)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("x generate: %w", err)
 	}
 
 	win.Create(X.RootWin(), screen.X, screen.Y, w, h, 0)
@@ -98,7 +98,7 @@ func NewBar(
 
 	err = ewmh.WmWindowTypeSet(X, win.Id, []string{"_NET_WM_WINDOW_TYPE_DOCK"})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("x window type set: %w", err)
 	}
 
 	strutVals := make([]byte, 4*12)

@@ -11,7 +11,7 @@ import (
 func MustAtom(x *xgbutil.XUtil, name string) xproto.Atom {
 	atom, err := xprop.Atom(x, name, false)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("cannot get atom %s: %s", name, err)
 	}
 
 	return atom

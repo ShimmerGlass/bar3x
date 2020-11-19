@@ -81,7 +81,7 @@ func runChild() {
 			return
 		}
 
-		log.Errorf("X error: %s", err)
+		log.Errorf("x handler error: %s", err)
 	})
 
 	_, err = bar.CreateBars(cfg, X)
