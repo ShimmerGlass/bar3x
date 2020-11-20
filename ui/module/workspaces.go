@@ -47,7 +47,7 @@ func (m *Workspaces) Init() error {
 		return err
 	}
 	m.Root = root
-	m.display = m.ctx.MustString("display")
+	m.display = m.Context().MustString("display")
 
 	go func() {
 		m.update()
@@ -85,28 +85,47 @@ func (m *Workspaces) update() {
 
 		switch {
 		case !wk.Visible && !wk.Focused:
-			el.Rect.SetColor(m.ctx.MustColor("neutral_color"))
-			el.Text.SetColor(m.ctx.MustColor("neutral_light_color"))
-			el.Indicator.SetColor(m.ctx.MustColor("neutral_color"))
+			el.Rect.SetColor(m.Context().MustColor("neutral_color"))
+			el.Text.SetColor(m.Context().MustColor("neutral_light_color"))
+			el.Indicator.SetColor(m.Context().MustColor("neutral_color"))
 		case wk.Visible && !wk.Focused:
-			el.Rect.SetColor(m.ctx.MustColor("neutral_color"))
-			el.Text.SetColor(m.ctx.MustColor("text_color"))
-			el.Indicator.SetColor(m.ctx.MustColor("neutral_light_color"))
+			el.Rect.SetColor(m.Context().MustColor("neutral_color"))
+			el.Text.SetColor(m.Context().MustColor("text_color"))
+			el.Indicator.SetColor(m.Context().MustColor("neutral_light_color"))
 		case wk.Visible && wk.Focused:
-			el.Rect.SetColor(m.ctx.MustColor("neutral_color"))
-			el.Text.SetColor(m.ctx.MustColor("text_color"))
-			el.Indicator.SetColor(m.ctx.MustColor("accent_color"))
+			el.Rect.SetColor(m.Context().MustColor("neutral_color"))
+			el.Text.SetColor(m.Context().MustColor("text_color"))
+			el.Indicator.SetColor(m.Context().MustColor("accent_color"))
 		}
 
 		el.Text.SetText(wk.Name)
 		el.Root.SetVisible(true)
 
-		func(name string) {
+		func(wk i3.Workspace) {
 			el.Root.SetOnLeftClick(func(ui.Event) bool {
-				i3.RunCommand(fmt.Sprintf("workspace %s", name))
+				i3.RunCommand(fmt.Sprintf("workspace %s", wk.Name))
 				return false
 			})
-		}(wk.Name)
+
+			el.Root.SetOnPointerEnter(func(ui.Event) bool {
+				el.Indicator.SetColor(m.Context().MustColor("accent_color"))
+				el.Indicator.Notify()
+				return true
+			})
+
+			el.Root.SetOnPointerLeave(func(ui.Event) bool {
+				switch {
+				case wk.Focused:
+					el.Indicator.SetColor(m.Context().MustColor("accent_color"))
+				case wk.Visible:
+					el.Indicator.SetColor(m.Context().MustColor("neutral_light_color"))
+				default:
+					el.Indicator.SetColor(m.Context().MustColor("neutral_color"))
+				}
+				el.Indicator.Notify()
+				return true
+			})
+		}(wk)
 
 		j++
 	}
