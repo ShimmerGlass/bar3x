@@ -11,14 +11,12 @@ import (
 	"github.com/TheCreeper/go-notify"
 	log "github.com/sirupsen/logrus"
 
-	"net/http"
-	_ "net/http/pprof"
-
 	"github.com/BurntSushi/xgb"
 	"github.com/BurntSushi/xgb/xproto"
 	"github.com/BurntSushi/xgbutil"
 	"github.com/BurntSushi/xgbutil/xevent"
 	"github.com/shimmerglass/bar3x/bar"
+	debugsrv "github.com/shimmerglass/bar3x/debug"
 )
 
 const childEnv = "BAR3X_CHILD"
@@ -49,6 +47,7 @@ func runChild() {
 	cfgPath := flag.String("config", "", "YAML Config file path")
 	themePath := flag.String("theme", "", "YAML Theme file path")
 	debug := flag.Bool("debug", false, "Enable profile server on port 6060")
+	debugAddr := flag.String("debug-addr", "127.0.0.1:6060", "Debug server addr")
 	flag.Parse()
 
 	cfg, err := getConfig(*cfgPath, *themePath)
@@ -71,14 +70,17 @@ func runChild() {
 		log.Errorf("x handler error: %s", err)
 	})
 
-	_, err = bar.CreateBars(cfg, X)
+	bars, err := bar.CreateBars(cfg, X)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	if *debug {
 		go func() {
-			log.Println(http.ListenAndServe("localhost:6060", nil))
+			err := debugsrv.Run(*debugAddr, bars)
+			if err != nil {
+				log.Fatal(err)
+			}
 		}()
 	}
 
