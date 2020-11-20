@@ -5,6 +5,7 @@ import (
 	"github.com/shimmerglass/bar3x/ui"
 	"github.com/shimmerglass/bar3x/ui/base"
 	"github.com/shimmerglass/bar3x/ui/markup"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -42,12 +43,24 @@ func (m *Volume) Init() error {
 				Direction="left-right"
 				FgColor="{accent_color}"
 				BgColor="{neutral_color}"
+				Hover:BgColor="{neutral_light_color}"
 			/>
 		</Row>
 	`)
 
+	pul := pulse.New()
+
+	m.Bar.SetOnLeftClick(func(ev ui.Event) bool {
+		v := float64(ev.At.X) / float64(m.Bar.Width())
+		err := pul.SetVolume(v)
+		if err != nil {
+			logrus.Error(err)
+		}
+		return true
+	})
+
 	go func() {
-		pul := pulse.New()
+
 		for vol := range pul.Up {
 			if vol > 1 {
 				vol = 1

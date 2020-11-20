@@ -1,6 +1,8 @@
 package pulse
 
 import (
+	"fmt"
+	"os/exec"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -66,6 +68,11 @@ func (m *Pulse) update() {
 	}
 
 	m.Up <- vol
+}
+
+func (m *Pulse) SetVolume(v float64) error {
+	percent := int(v * 100)
+	return exec.Command("pactl", "set-sink-volume", "@DEFAULT_SINK@", fmt.Sprintf("%d%%", percent)).Run()
 }
 
 func (m *Pulse) volume() (float64, error) {
