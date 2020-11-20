@@ -1,7 +1,6 @@
 package base
 
 import (
-	"image"
 	"image/draw"
 
 	"github.com/shimmerglass/bar3x/ui"
@@ -9,8 +8,9 @@ import (
 
 type Row struct {
 	Base
-	inner []ui.Drawable
-	align string
+	inner  []ui.Drawable
+	align  string
+	lastEv ui.Event
 }
 
 func NewRow(p ui.ParentDrawable) *Row {
@@ -46,7 +46,7 @@ func (c *Row) ChildContext(i int) ui.Context {
 }
 
 func (c *Row) SetContext(ctx ui.Context) {
-	c.ctx = ctx
+	c.Base.SetContext(ctx)
 	c.updateChildrenCtx()
 }
 
@@ -66,22 +66,8 @@ func (c *Row) SendEvent(ev ui.Event) bool {
 		return false
 	}
 
-	x := 0
-	for _, i := range c.inner {
-		if !i.Visible() {
-			continue
-		}
-		w, h := i.Width(), i.Height()
-		y := (c.height.V - h) / 2
-
-		if ev.At.In(image.Rect(x, y, x+w, y+h)) {
-			iev := ev
-			iev.At = ev.At.Sub(image.Pt(x, y))
-			i.SendEvent(iev)
-		}
-
-		x += w
-	}
+	c.layout().SendEvent(ev, c.lastEv)
+	c.lastEv = ev
 
 	return true
 }
@@ -135,21 +121,28 @@ func (r *Row) updateChildrenCtx() {
 	}
 }
 
-func (r Row) Draw(x, y int, im draw.Image) {
+func (c *Row) layout() containerLayout {
+	l := make(containerLayout, 0, len(c.inner))
 	xOff, yOff := 0, 0
-	for _, i := range r.inner {
+	for _, i := range c.inner {
 		if !i.Visible() {
 			continue
 		}
-		switch r.align {
+		w, h := i.Width(), i.Height()
+		switch c.align {
 		case VAlignTop:
 			yOff = 0
 		case VAlighMiddle:
-			yOff = (r.height.V - i.Height()) / 2
+			yOff = (c.height.V - h) / 2
 		case VAlignBottom:
-			yOff = r.height.V - i.Height()
+			yOff = c.height.V - h
 		}
-		i.Draw(x+xOff, y+yOff, im)
-		xOff += i.Width()
+		l.Add(i, xOff, yOff, w, h)
+		xOff += w
 	}
+	return l
+}
+
+func (r Row) Draw(x, y int, im draw.Image) {
+	r.layout().Draw(x, y, im)
 }

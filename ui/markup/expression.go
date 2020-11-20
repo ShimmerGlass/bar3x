@@ -37,15 +37,27 @@ func (m *Markup) evaluateCtxAttr(expr string) (gval.Evaluable, error) {
 	return gval.NewLanguage(gval.Full()).NewEvaluable(expr)
 }
 
-func (m *Markup) evaluateAttr(elem ui.Drawable, targetFieldName string, expr string, vars interface{}, refs reflect.Value, refsReady map[string]*sync.WaitGroup) (*field, gval.Evaluable, error) {
+func (m *Markup) evaluateAttr(elem ui.Drawable, targetFieldName, state string, expr string, vars interface{}, refs reflect.Value, refsReady map[string]*sync.WaitGroup) (*property, error) {
 	targetField, err := newField(reflect.ValueOf(elem), targetFieldName)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
+	}
+
+	var stateMask elementState
+	switch state {
+	case "Hover":
+		stateMask = statePointerHover
+	default:
+		stateMask = stateNone
 	}
 
 	if len(expr) == 0 {
-		return targetField, func(c context.Context, parameter interface{}) (interface{}, error) {
-			return "", nil
+		return &property{
+			state: stateMask,
+			field: targetField,
+			expr: func(c context.Context, parameter interface{}) (interface{}, error) {
+				return "", nil
+			},
 		}, nil
 	}
 
@@ -53,9 +65,13 @@ func (m *Markup) evaluateAttr(elem ui.Drawable, targetFieldName string, expr str
 	if expr[0] != '{' || expr[len(expr)-1] != '}' {
 		eval, err := literalExpr(targetField.Type, expr)
 		if err != nil {
-			return nil, nil, errors.Wrapf(err, "field %s", targetFieldName)
+			return nil, errors.Wrapf(err, "field %s", targetFieldName)
 		}
-		return targetField, eval, nil
+		return &property{
+			state: stateMask,
+			field: targetField,
+			expr:  eval,
+		}, nil
 	}
 
 	expr = expr[1 : len(expr)-1]
@@ -130,11 +146,15 @@ func (m *Markup) evaluateAttr(elem ui.Drawable, targetFieldName string, expr str
 
 	eval, err = lang.NewEvaluable(expr)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	evalReady.Done()
 
-	return targetField, eval, nil
+	return &property{
+		state: stateMask,
+		field: targetField,
+		expr:  eval,
+	}, nil
 }
 
 func literalExpr(typ reflect.Type, str string) (gval.Evaluable, error) {

@@ -131,13 +131,24 @@ func NewBar(
 		Buf:     ximg,
 		padding: ctx.MustInt("h_padding"),
 		height:  h,
-		ctx:     ctx.New(ui.Context{"display": screen.Outputs[0]}),
-		screen:  screen,
-		mk:      mk,
+		ctx: ctx.New(ui.Context{
+			"display": screen.Outputs[0],
+		}),
+		screen: screen,
+		mk:     mk,
 	}
 
 	// events
-	win.Listen(xproto.EventMaskButtonPress, xproto.EventMaskButtonRelease)
+	err = win.Listen(
+		xproto.EventMaskButtonPress,
+		xproto.EventMaskButtonRelease,
+		xproto.EventMaskPointerMotion,
+		xproto.EventMaskLeaveWindow,
+		xproto.EventMaskEnterWindow,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("x event listen: %w", err)
+	}
 	xevent.ButtonReleaseFun(func(X *xgbutil.XUtil, e xevent.ButtonReleaseEvent) {
 		var t ui.EventType
 		switch e.Detail {
@@ -150,6 +161,24 @@ func NewBar(
 		}
 		b.displatchEvent(ui.Event{
 			Type: t,
+			At:   image.Pt(int(e.EventX), int(e.EventY)),
+		})
+	}).Connect(X, win.Id)
+	xevent.MotionNotifyFun(func(xu *xgbutil.XUtil, e xevent.MotionNotifyEvent) {
+		b.displatchEvent(ui.Event{
+			Type: ui.EventPointerMove,
+			At:   image.Pt(int(e.EventX), int(e.EventY)),
+		})
+	}).Connect(X, win.Id)
+	xevent.LeaveNotifyFun(func(xu *xgbutil.XUtil, e xevent.LeaveNotifyEvent) {
+		b.displatchEvent(ui.Event{
+			Type: ui.EventPointerLeave,
+			At:   image.Pt(int(e.EventX), int(e.EventY)),
+		})
+	}).Connect(X, win.Id)
+	xevent.EnterNotifyFun(func(xu *xgbutil.XUtil, e xevent.EnterNotifyEvent) {
+		b.displatchEvent(ui.Event{
+			Type: ui.EventPointerEnter,
 			At:   image.Pt(int(e.EventX), int(e.EventY)),
 		})
 	}).Connect(X, win.Id)

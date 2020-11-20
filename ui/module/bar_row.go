@@ -14,7 +14,7 @@ type sepRowEl struct {
 }
 
 func (s *sepRowEl) SetContext(ctx ui.Context) {
-	s.ctx = ctx
+	s.moduleBase.SetContext(ctx)
 	if s.Root != nil {
 		s.Root.SetContext(ctx)
 	}

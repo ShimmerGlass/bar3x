@@ -38,7 +38,7 @@ func (l *Layers) Add(d ui.Drawable) {
 }
 
 func (l *Layers) SetContext(ctx ui.Context) {
-	l.ctx = ctx
+	l.Base.SetContext(ctx)
 	for _, i := range l.inner {
 		i.SetContext(ctx)
 	}

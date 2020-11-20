@@ -12,7 +12,7 @@ import (
 type Bars struct {
 	x    *xgbutil.XUtil
 	ctx  ui.Context
-	bars []*Bar
+	Bars []*Bar
 
 	mk    *markup.Markup
 	clock *module.Clock
@@ -72,14 +72,14 @@ func (b *Bars) createBars() error {
 		if err != nil {
 			return err
 		}
-		b.bars = append(b.bars, bar)
+		b.Bars = append(b.Bars, bar)
 	}
 
 	return nil
 }
 
 func (b *Bars) onClockTick() {
-	for _, bar := range b.bars {
+	for _, bar := range b.Bars {
 		bar.LeftRoot.Paint()
 		bar.CenterRoot.Paint()
 		bar.RightRoot.Paint()

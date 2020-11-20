@@ -45,10 +45,13 @@ func (c *Rect) ChildContext(i int) ui.Context {
 	return c.ctx
 }
 func (r *Rect) Children() []ui.Drawable {
+	if r.inner == nil {
+		return nil
+	}
 	return []ui.Drawable{r.inner}
 }
 func (c *Rect) SetContext(ctx ui.Context) {
-	c.ctx = ctx
+	c.Base.SetContext(ctx)
 	if c.inner != nil {
 		c.inner.SetContext(ctx)
 	}
@@ -75,11 +78,13 @@ func (s *Rect) SendEvent(ev ui.Event) bool {
 		return false
 	}
 
-	if !s.inner.Visible() {
-		return true
-	}
+	if s.inner != nil {
+		if !s.inner.Visible() {
+			return true
+		}
 
-	s.inner.SendEvent(ev)
+		s.inner.SendEvent(ev)
+	}
 
 	return true
 }

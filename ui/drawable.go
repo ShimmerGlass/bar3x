@@ -10,6 +10,9 @@ type EventType int
 const (
 	EventTypeLeftClick = iota
 	EventTypeRightClick
+	EventPointerMove
+	EventPointerEnter
+	EventPointerLeave
 )
 
 type Event struct {
@@ -33,10 +36,22 @@ type Drawable interface {
 
 	SendEvent(Event) bool
 
+	OnLeftClick() func(Event) bool
+	OnRightClick() func(Event) bool
+	SetOnLeftClick(cb func(Event) bool)
+	SetOnRightClick(cb func(Event) bool)
+	OnPointerMove() func(Event) bool
+	SetOnPointerMove(cb func(Event) bool)
+	OnPointerEnter() func(Event) bool
+	SetOnPointerEnter(cb func(Event) bool)
+	OnPointerLeave() func(Event) bool
+	SetOnPointerLeave(cb func(Event) bool)
+
 	Draw(x, y int, im draw.Image)
 	Notify()
 
 	Context() Context
+	Children() []Drawable
 }
 
 type ParentDrawable interface {

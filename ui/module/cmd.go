@@ -127,7 +127,7 @@ func (c *Cmd) Update(ctx context.Context) {
 		}
 	case "plain":
 		txt := base.NewText(c)
-		txt.SetContext(c.ctx)
+		txt.SetContext(c.Context())
 		txt.SetText(strings.TrimSpace(stdout.String()))
 		root = txt
 	default:

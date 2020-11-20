@@ -9,7 +9,17 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+type elementState uint64
+
+const (
+	stateNone elementState = 1 << iota
+	statePointerHover
+
+	stateAll elementState = 0xFFFFFFF
+)
+
 type property struct {
+	state elementState
 	field *field
 	expr  gval.Evaluable
 }
@@ -22,18 +32,35 @@ type ctxProp struct {
 type MarkupDrawable struct {
 	parent     ui.Drawable
 	inner      ui.Drawable
-	properties []property
-	ctxProp    []ctxProp
+	properties []*property
+	ctxProp    []*ctxProp
+
+	state elementState
 }
 
 func newMarkupDrawable(p ui.Drawable, inner ui.Drawable) *MarkupDrawable {
 	return &MarkupDrawable{
 		parent: p,
 		inner:  inner,
+		state:  stateNone,
 	}
 }
 
 func (b *MarkupDrawable) Init() error {
+	b.SetOnPointerEnter(func(ui.Event) bool {
+		b.state |= statePointerHover
+		b.setProps()
+		b.Notify()
+		return true
+	})
+
+	b.SetOnPointerLeave(func(ui.Event) bool {
+		b.state &^= statePointerHover
+		b.setProps()
+		b.Notify()
+		return true
+	})
+
 	return b.inner.Init()
 }
 
@@ -51,8 +78,24 @@ func (b *MarkupDrawable) SetContext(ctx ui.Context) {
 
 	b.inner.SetContext(ctx)
 
+	b.setProps()
+}
+
+func (b *MarkupDrawable) setProps() {
+NextProp:
 	for _, p := range b.properties {
-		v, err := p.expr(context.Background(), ctx)
+		s := p.state & b.state
+		if s == 0 {
+			continue
+		}
+
+		for _, p2 := range b.properties {
+			if p2.state&b.state > s {
+				continue NextProp
+			}
+		}
+
+		v, err := p.expr(context.Background(), b.Context())
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -111,4 +154,35 @@ func (b *MarkupDrawable) Draw(x, y int, im draw.Image) {
 
 func (b *MarkupDrawable) SendEvent(ev ui.Event) bool {
 	return b.inner.SendEvent(ev)
+}
+
+func (b *MarkupDrawable) OnLeftClick() func(ui.Event) bool {
+	return b.inner.OnLeftClick()
+}
+func (b *MarkupDrawable) OnRightClick() func(ui.Event) bool {
+	return b.inner.OnRightClick()
+}
+func (b *MarkupDrawable) SetOnLeftClick(cb func(ui.Event) bool) {
+	b.inner.SetOnLeftClick(cb)
+}
+func (b *MarkupDrawable) SetOnRightClick(cb func(ui.Event) bool) {
+	b.inner.SetOnRightClick(cb)
+}
+func (b *MarkupDrawable) OnPointerMove() func(ui.Event) bool {
+	return b.inner.OnPointerMove()
+}
+func (b *MarkupDrawable) SetOnPointerMove(cb func(ui.Event) bool) {
+	b.inner.SetOnPointerMove(cb)
+}
+func (b *MarkupDrawable) OnPointerEnter() func(ui.Event) bool {
+	return b.inner.OnPointerEnter()
+}
+func (b *MarkupDrawable) SetOnPointerEnter(cb func(ui.Event) bool) {
+	b.inner.SetOnPointerEnter(cb)
+}
+func (b *MarkupDrawable) OnPointerLeave() func(ui.Event) bool {
+	return b.inner.OnPointerLeave()
+}
+func (b *MarkupDrawable) SetOnPointerLeave(cb func(ui.Event) bool) {
+	b.inner.SetOnPointerLeave(cb)
 }

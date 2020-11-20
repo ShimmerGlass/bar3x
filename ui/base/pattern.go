@@ -33,7 +33,7 @@ func (p *Pattern) Children() []ui.Drawable {
 	return []ui.Drawable{p.inner}
 }
 func (p *Pattern) SetContext(ctx ui.Context) {
-	p.ctx = ctx
+	p.Base.SetContext(ctx)
 	if p.inner != nil {
 		p.inner.SetContext(ctx)
 	}

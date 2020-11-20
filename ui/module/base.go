@@ -9,7 +9,6 @@ import (
 
 type moduleBase struct {
 	base.Base
-	ctx  ui.Context
 	Root ui.Drawable
 }
 
@@ -18,7 +17,7 @@ func newBase(p ui.ParentDrawable) moduleBase {
 }
 
 func (b *moduleBase) SetContext(ctx ui.Context) {
-	b.ctx = ctx
+	b.Base.SetContext(ctx)
 	if b.Root != nil {
 		b.Root.SetContext(ctx)
 	}
@@ -31,7 +30,7 @@ func (b *moduleBase) Children() []ui.Drawable {
 }
 
 func (b *moduleBase) ChildContext(int) ui.Context {
-	return b.ctx
+	return b.Base.Context()
 }
 
 func (b *moduleBase) Width() int {

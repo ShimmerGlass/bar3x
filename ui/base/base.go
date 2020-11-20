@@ -52,8 +52,11 @@ type Base struct {
 	width   *WatchInt
 	height  *WatchInt
 
-	leftClickHandler  func(ui.Event) bool
-	rightClickHandler func(ui.Event) bool
+	leftClickHandler    func(ui.Event) bool
+	rightClickHandler   func(ui.Event) bool
+	pointerMoveHandler  func(ui.Event) bool
+	pointerEnterHandler func(ui.Event) bool
+	pointerLeaveHandler func(ui.Event) bool
 }
 
 func NewBase(p ui.ParentDrawable) Base {
@@ -69,7 +72,7 @@ func (b *Base) Init() error {
 	return nil
 }
 func (b *Base) SetContext(ctx ui.Context) {
-	b.ctx = ctx
+	b.ctx = b.ctx.New(ctx)
 }
 
 func (b *Base) Parent() ui.ParentDrawable {
@@ -77,6 +80,9 @@ func (b *Base) Parent() ui.ParentDrawable {
 }
 func (b *Base) Context() ui.Context {
 	return b.ctx
+}
+func (b *Base) Children() []ui.Drawable {
+	return nil
 }
 
 func (b Base) Notify() {
@@ -117,6 +123,18 @@ func (b *Base) SendEvent(ev ui.Event) bool {
 		if b.rightClickHandler != nil {
 			return b.rightClickHandler(ev)
 		}
+	case ui.EventPointerMove:
+		if b.pointerMoveHandler != nil {
+			return b.pointerMoveHandler(ev)
+		}
+	case ui.EventPointerEnter:
+		if b.pointerEnterHandler != nil {
+			return b.pointerEnterHandler(ev)
+		}
+	case ui.EventPointerLeave:
+		if b.pointerLeaveHandler != nil {
+			return b.pointerLeaveHandler(ev)
+		}
 	}
 	return true
 }
@@ -131,4 +149,22 @@ func (b *Base) SetOnLeftClick(cb func(ui.Event) bool) {
 }
 func (b *Base) SetOnRightClick(cb func(ui.Event) bool) {
 	b.rightClickHandler = cb
+}
+func (b *Base) OnPointerMove() func(ui.Event) bool {
+	return b.pointerMoveHandler
+}
+func (b *Base) SetOnPointerMove(cb func(ui.Event) bool) {
+	b.pointerMoveHandler = cb
+}
+func (b *Base) OnPointerEnter() func(ui.Event) bool {
+	return b.pointerEnterHandler
+}
+func (b *Base) SetOnPointerEnter(cb func(ui.Event) bool) {
+	b.pointerEnterHandler = cb
+}
+func (b *Base) OnPointerLeave() func(ui.Event) bool {
+	return b.pointerLeaveHandler
+}
+func (b *Base) SetOnPointerLeave(cb func(ui.Event) bool) {
+	b.pointerLeaveHandler = cb
 }

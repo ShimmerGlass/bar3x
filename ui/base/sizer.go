@@ -36,6 +36,8 @@ type Sizer struct {
 	paddingLeft   int
 
 	inner ui.Drawable
+
+	lastEv ui.Event
 }
 
 func NewSizer(p ui.ParentDrawable) *Sizer {
@@ -68,7 +70,7 @@ func (r *Sizer) Children() []ui.Drawable {
 	return []ui.Drawable{r.inner}
 }
 func (c *Sizer) SetContext(ctx ui.Context) {
-	c.ctx = ctx
+	c.Base.SetContext(ctx)
 	if c.inner != nil {
 		c.inner.SetContext(ctx)
 	}
@@ -131,16 +133,19 @@ func (s *Sizer) SendEvent(ev ui.Event) bool {
 		return false
 	}
 
+	if s.inner == nil {
+		return true
+	}
+
 	if !s.inner.Visible() {
 		return true
 	}
 
 	ir := s.innerRect()
-	if ev.At.In(ir) {
-		iev := ev
-		iev.At = ev.At.Sub(ir.Min)
-		s.inner.SendEvent(iev)
-	}
+	l := make(containerLayout, 0, 1)
+	l.Add(s.inner, ir.Min.X, ir.Min.Y, ir.Dx(), ir.Dy())
+	l.SendEvent(ev, s.lastEv)
+	s.lastEv = ev
 
 	return true
 }

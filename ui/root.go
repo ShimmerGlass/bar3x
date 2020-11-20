@@ -117,3 +117,34 @@ func (r *Root) ensureImage(size image.Rectangle) {
 Make:
 	r.im = image.NewRGBA(size)
 }
+
+func (b *Root) OnLeftClick() func(Event) bool {
+	return b.Inner.OnLeftClick()
+}
+func (b *Root) OnRightClick() func(Event) bool {
+	return b.Inner.OnRightClick()
+}
+func (b *Root) SetOnLeftClick(cb func(Event) bool) {
+	b.Inner.SetOnLeftClick(cb)
+}
+func (b *Root) SetOnRightClick(cb func(Event) bool) {
+	b.Inner.SetOnRightClick(cb)
+}
+func (b *Root) OnPointerMove() func(Event) bool {
+	return b.Inner.OnPointerMove()
+}
+func (b *Root) SetOnPointerMove(cb func(Event) bool) {
+	b.Inner.SetOnPointerMove(cb)
+}
+func (b *Root) OnPointerEnter() func(Event) bool {
+	return b.Inner.OnPointerEnter()
+}
+func (b *Root) SetOnPointerEnter(cb func(Event) bool) {
+	b.Inner.SetOnPointerEnter(cb)
+}
+func (b *Root) OnPointerLeave() func(Event) bool {
+	return b.Inner.OnPointerLeave()
+}
+func (b *Root) SetOnPointerLeave(cb func(Event) bool) {
+	b.Inner.SetOnPointerLeave(cb)
+}

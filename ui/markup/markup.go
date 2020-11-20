@@ -90,35 +90,29 @@ func (m *Markup) parseNode(idx int, parent ui.ParentDrawable, refs reflect.Value
 				return nil, err
 			}
 
-			mkDrawable.ctxProp = append(mkDrawable.ctxProp, ctxProp{
+			mkDrawable.ctxProp = append(mkDrawable.ctxProp, &ctxProp{
 				name: a.Name.Local,
 				expr: expr,
 			})
 			continue
-		}
+		} else {
+			prop, err := m.evaluateAttr(drawable, a.Name.Local, a.Name.Space, a.Value, ctx, refs, refsReady)
+			if err != nil {
+				return nil, errors.Wrap(err, name)
+			}
 
-		field, expr, err := m.evaluateAttr(drawable, a.Name.Local, a.Value, ctx, refs, refsReady)
-		if err != nil {
-			return nil, errors.Wrap(err, name)
+			mkDrawable.properties = append(mkDrawable.properties, prop)
 		}
-
-		mkDrawable.properties = append(mkDrawable.properties, property{
-			expr:  expr,
-			field: field,
-		})
 	}
 
 	body := strings.TrimSpace(node.Body)
 	if len(body) > 0 {
-		field, expr, err := m.evaluateAttr(drawable, "Text", body, ctx, refs, refsReady)
+		prop, err := m.evaluateAttr(drawable, "Text", "", body, ctx, refs, refsReady)
 		if err != nil {
 			return nil, errors.Wrap(err, name)
 		}
 
-		mkDrawable.properties = append(mkDrawable.properties, property{
-			expr:  expr,
-			field: field,
-		})
+		mkDrawable.properties = append(mkDrawable.properties, prop)
 	}
 
 	mkDrawable.SetContext(ctx)
