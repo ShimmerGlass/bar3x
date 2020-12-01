@@ -6,6 +6,8 @@ import (
 	"os"
 	"strconv"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type ProcessWatcher struct {
@@ -126,6 +128,10 @@ func (w *ProcessWatcher) processStats(pid string) (string, int, int, error) {
 	// extract the name
 	p := bytes.IndexByte(stats, '(')
 	p2 := bytes.IndexByte(stats, ')')
+	if p == -1 || p2 == -1 {
+		log.Errorf("bad proc line %s", stats)
+	}
+
 	name := string(stats[p+1 : p2])
 
 	adv := p2
