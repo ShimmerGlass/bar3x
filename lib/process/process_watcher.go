@@ -2,12 +2,11 @@ package process
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"os"
 	"strconv"
 	"time"
-
-	log "github.com/sirupsen/logrus"
 )
 
 type ProcessWatcher struct {
@@ -117,7 +116,10 @@ func (w *ProcessWatcher) processStats(pid string) (string, int, int, error) {
 	}
 	defer f.Close()
 
-	w.statsBuf.ReadFrom(f)
+	_, err = w.statsBuf.ReadFrom(f)
+	if err != nil {
+		return "", 0, 0, err
+	}
 	defer w.statsBuf.Reset()
 
 	stats := w.statsBuf.Bytes()
@@ -129,7 +131,7 @@ func (w *ProcessWatcher) processStats(pid string) (string, int, int, error) {
 	p := bytes.IndexByte(stats, '(')
 	p2 := bytes.IndexByte(stats, ')')
 	if p == -1 || p2 == -1 {
-		log.Errorf("bad proc line %s", stats)
+		return "", 0, 0, fmt.Errorf("bad proc line %s", stats)
 	}
 
 	name := string(stats[p+1 : p2])
