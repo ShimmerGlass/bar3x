@@ -3,6 +3,7 @@ package markup
 import (
 	"context"
 	"fmt"
+	"os/exec"
 	"reflect"
 	"strconv"
 	"strings"
@@ -218,6 +219,18 @@ func literalExpr(typ reflect.Type, str string) (gval.Evaluable, error) {
 			}
 			value = v
 
+		default:
+			return nil, fmt.Errorf("type %s not handled", typ)
+		}
+
+	case reflect.Func:
+		switch typ.String() {
+		case "func(ui.Event) bool":
+			value = func(ui.Event) bool {
+				cmd := exec.Command("/bin/bash", "-c", str)
+				cmd.Start()
+				return true
+			}
 		default:
 			return nil, fmt.Errorf("type %s not handled", typ)
 		}
