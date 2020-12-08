@@ -5,6 +5,7 @@ import (
 	"image/color"
 	"image/draw"
 
+	"github.com/fogleman/gg"
 	"github.com/shimmerglass/bar3x/ui"
 )
 
@@ -18,6 +19,7 @@ type Rect struct {
 	color     color.Color
 	setWidth  int
 	setHeight int
+	radius    int
 }
 
 func NewRect(p ui.ParentDrawable) *Rect {
@@ -73,6 +75,13 @@ func (b *Rect) SetColor(v color.Color) {
 	b.color = v
 }
 
+func (b *Rect) Radius() int {
+	return b.radius
+}
+func (b *Rect) SetRadius(v int) {
+	b.radius = v
+}
+
 func (s *Rect) SendEvent(ev ui.Event) bool {
 	if !s.Base.SendEvent(ev) {
 		return false
@@ -111,16 +120,24 @@ func (r *Rect) updateSize() {
 }
 
 func (r *Rect) Draw(x, y int, im draw.Image) {
-	_, _, _, a := r.color.RGBA()
-	if a == 0 {
-		return
-	}
+	w, h := r.Width(), r.Height()
+	dc := gg.NewContext(w, h)
+	dc.DrawRoundedRectangle(
+		0,
+		0,
+		float64(w),
+		float64(h),
+		float64(r.radius),
+	)
+
+	dc.SetColor(r.color)
+	dc.Fill()
 
 	draw.Draw(
 		im,
-		image.Rect(x, y, x+r.width.V, y+r.height.V),
-		image.NewUniform(r.color),
-		image.Point{},
+		image.Rect(x, y, x+w, y+h),
+		dc.Image(),
+		image.Pt(0, 0),
 		draw.Over,
 	)
 

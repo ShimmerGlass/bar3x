@@ -148,7 +148,7 @@ func (m *Workspaces) addIndicator() {
 			ref="Root"
 			PaddingRight="{is_last_visible ? 0 : h_padding}"
 		>
-			<Rect ref="Rect">
+			<Rect ref="Rect" Radius="1">
 				<Col>
 					<Sizer
 						ref="Content"
