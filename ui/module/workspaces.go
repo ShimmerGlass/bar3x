@@ -23,9 +23,10 @@ type workspaceIndicator struct {
 type Workspaces struct {
 	moduleBase
 
-	mk       *markup.Markup
-	display  string
-	maxWidth int
+	mk          *markup.Markup
+	display     string
+	maxWidth    int
+	onlyCurrent bool
 
 	Row *base.Row
 	els []*workspaceIndicator
@@ -74,6 +75,9 @@ func (m *Workspaces) update() {
 	j := 0
 	for _, wk := range wks {
 		if wk.Output != m.display {
+			continue
+		}
+		if m.onlyCurrent && !wk.Visible {
 			continue
 		}
 
@@ -177,4 +181,11 @@ func (m *Workspaces) MaxWidth() int {
 }
 func (m *Workspaces) SetMaxWidth(v int) {
 	m.maxWidth = v
+}
+
+func (m *Workspaces) OnlyCurrent() bool {
+	return m.onlyCurrent
+}
+func (m *Workspaces) SetOnlyCurrent(v bool) {
+	m.onlyCurrent = v
 }
