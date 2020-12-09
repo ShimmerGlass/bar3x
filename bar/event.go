@@ -27,7 +27,7 @@ func (b *Bar) displatchEvent(ev ui.Event) {
 
 	{
 		w, h := b.RightRoot.Width(), b.RightRoot.Height()
-		x, y := b.screen.Width-w-b.padding, (b.height-h)/2
+		x, y := b.screen.Width-w-b.padding-b.TrayWidth, (b.height-h)/2
 
 		nev := ev
 		nev.At = ev.At.Sub(image.Pt(x, y))
