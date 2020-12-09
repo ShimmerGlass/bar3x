@@ -24,6 +24,9 @@ func RegisterMarkup(mk *markup.Markup) {
 	mk.Register("Rect", func(p ui.ParentDrawable) ui.Drawable {
 		return NewRect(p)
 	})
+	mk.Register("Circle", func(p ui.ParentDrawable) ui.Drawable {
+		return NewCircle(p)
+	})
 	mk.Register("Row", func(p ui.ParentDrawable) ui.Drawable {
 		return NewRow(p)
 	})
