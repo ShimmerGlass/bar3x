@@ -36,6 +36,9 @@ type Connections struct {
 
 	els []*connIndicator
 
+	typeFilter map[string]bool
+	nameFilter map[string]bool
+
 	mk    *markup.Markup
 	clock *Clock
 	nm    gonm.NetworkManager
@@ -46,6 +49,10 @@ func NewConnections(p ui.ParentDrawable, mk *markup.Markup, clock *Clock) *Conne
 		clock:      clock,
 		mk:         mk,
 		moduleBase: newBase(p),
+		typeFilter: map[string]bool{
+			"vpn":            true,
+			"802-3-ethernet": true,
+		},
 	}
 }
 
@@ -61,6 +68,38 @@ func (m *Connections) Init() error {
 
 	m.clock.Add(m, time.Second)
 	return nil
+}
+
+func (m *Connections) SetTypeFilter(v []string) {
+	f := map[string]bool{}
+	for _, v := range v {
+		f[v] = true
+	}
+	m.typeFilter = f
+}
+
+func (m *Connections) TypeFilter() []string {
+	r := []string{}
+	for f := range m.typeFilter {
+		r = append(r, f)
+	}
+	return r
+}
+
+func (m *Connections) SetNameFilter(v []string) {
+	f := map[string]bool{}
+	for _, v := range v {
+		f[v] = true
+	}
+	m.nameFilter = f
+}
+
+func (m *Connections) NameFilter() []string {
+	r := []string{}
+	for f := range m.nameFilter {
+		r = append(r, f)
+	}
+	return r
 }
 
 func (m *Connections) Update(context.Context) {
@@ -171,7 +210,7 @@ func (m *Connections) getConnections() []connState {
 
 	for _, c := range conns {
 		t, _ := c.GetPropertyType()
-		if t != "vpn" && t != "802-3-ethernet" {
+		if len(m.typeFilter) > 0 && !m.typeFilter[t] {
 			continue
 		}
 		isVPN, err := c.GetPropertyVPN()
@@ -220,6 +259,10 @@ func (m *Connections) getConnections() []connState {
 		}
 		file := filepath.Base(path)
 		name := strings.TrimSuffix(file, filepath.Ext(file))
+
+		if len(m.nameFilter) > 0 && !m.nameFilter[name] {
+			continue
+		}
 
 		connections = append(connections, connState{
 			isVPN:  isVPN,
