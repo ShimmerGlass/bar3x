@@ -33,16 +33,20 @@ func init() {
 		"v_padding":  5,
 		"bar_height": 30,
 
-		"text_font_size": 13.0,
-		"icon_font_size": 13.0,
-		"text_font":      mustB64Asset("resources/fonts/noto-sans.ttf"),
-		"icon_font":      mustB64Asset("resources/fonts/nerdfont-noto-mono.ttf"),
+		"text_font_size":       13.0,
+		"text_small_font_size": 11.0,
+		"icon_font_size":       13.0,
+		"text_font":            mustB64Asset("resources/fonts/noto-sans.ttf"),
+		"icon_font":            mustB64Asset("resources/fonts/nerdfont-noto-mono.ttf"),
 
 		"bg_color":            "#17191e",
 		"text_color":          "#d4e5f7",
 		"accent_color":        "#1ebce8",
 		"neutral_color":       "#37393e",
 		"neutral_light_color": "#90949d",
+		"success_color":       "#28a745",
+		"warning_color":       "#ffc107",
+		"danger_color":        "#dc3545",
 
 		"icons": map[string]interface{}{
 			"error":    "\uf071",
