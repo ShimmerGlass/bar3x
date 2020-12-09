@@ -59,8 +59,8 @@ func RegisterMarkup(mk *markup.Markup, clock *Clock) {
 		return NewVolume(p, mk)
 	})
 
-	mk.Register("VPN", func(p ui.ParentDrawable) ui.Drawable {
-		return NewVPN(p, mk, clock)
+	mk.Register("Connections", func(p ui.ParentDrawable) ui.Drawable {
+		return NewConnections(p, mk, clock)
 	})
 
 	mk.Register("Weather", func(p ui.ParentDrawable) ui.Drawable {
