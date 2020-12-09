@@ -73,7 +73,7 @@ func init() {
 
 		"bar_right": `
 			<ModuleRow>
-				<VPN />
+				<Connections />
 				<CPU />
 				<RAM />
 				<DiskUsage />
