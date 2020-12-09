@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/TheCreeper/go-notify"
@@ -27,8 +29,20 @@ func main() {
 		return
 	}
 
+	var cmd *exec.Cmd
+
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGHUP)
+	go func() {
+		for range sigs {
+			if cmd != nil {
+				syscall.Kill(cmd.Process.Pid, syscall.SIGUSR1)
+			}
+		}
+	}()
+
 	for {
-		cmd := exec.Command(os.Args[0], os.Args[1:]...)
+		cmd = exec.Command(os.Args[0], os.Args[1:]...)
 		cmd.Stderr = os.Stderr
 		cmd.Stdout = os.Stdout
 		cmd.Env = append(os.Environ(), fmt.Sprintf("%s=1", childEnv))
@@ -39,7 +53,9 @@ func main() {
 		ntf := notify.NewNotification("bar3x", fmt.Sprintf("bar3x: exited with status %d", cmd.ProcessState.ExitCode()))
 		ntf.Show()
 
-		time.Sleep(time.Second)
+		if cmd.ProcessState.ExitCode() > 0 {
+			time.Sleep(time.Second)
+		}
 	}
 }
 
@@ -49,6 +65,14 @@ func runChild() {
 	debug := flag.Bool("debug", false, "Enable profile server on port 6060")
 	debugAddr := flag.String("debug-addr", "127.0.0.1:6060", "Debug server addr")
 	flag.Parse()
+
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGHUP, syscall.SIGUSR1)
+	go func() {
+		for range sigs {
+			os.Exit(0)
+		}
+	}()
 
 	cfg, err := getConfig(*cfgPath, *themePath)
 	if err != nil {
