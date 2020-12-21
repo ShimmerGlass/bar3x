@@ -3,7 +3,7 @@ go:
   - 1.x
 env: GO111MODULE=on
 before_install:
-  - sudo apt-get -y install libcairo-dev
+  - sudo apt-get -y install libcairo-dev libpulse-dev
 install:
   - true # prevent travis from installing dependencies now
 script:

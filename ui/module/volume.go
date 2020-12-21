@@ -48,20 +48,22 @@ func (m *Volume) Init() error {
 		</Row>
 	`)
 
-	pul := pulse.New()
-
 	m.Bar.SetOnLeftClick(func(ev ui.Event) bool {
 		v := float64(ev.At.X) / float64(m.Bar.Width())
-		err := pul.SetVolume(v)
+		err := pulse.SetVolume(v)
 		if err != nil {
 			logrus.Error(err)
 		}
 		return true
 	})
 
-	go func() {
+	c := make(chan struct{})
+	pulse.Watch(c)
 
-		for vol := range pul.Up {
+	go func() {
+		for range c {
+			vol := pulse.Volume()
+
 			if vol > 1 {
 				vol = 1
 			}

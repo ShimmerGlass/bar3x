@@ -1,114 +1,45 @@
 package pulse
 
+// #cgo pkg-config: libpulse
+// #include <pulse/pulseaudio.h>
+// #include "./pulse.h"
+import "C"
 import (
 	"fmt"
 	"os/exec"
-	"time"
+	"sync"
 
 	log "github.com/sirupsen/logrus"
-
-	"github.com/godbus/dbus"
-	"github.com/sqp/pulseaudio"
 )
 
-type Pulse struct {
-	pulse *pulseaudio.Client
+var currentVolume float64
 
-	Up chan float64
-}
+var lock sync.Mutex
+var watchers []chan struct{}
 
-func New() *Pulse {
-	m := &Pulse{
-		Up: make(chan float64),
+func init() {
+	log.Info("connecting to pulse")
+	r := C.initialize()
+	if r != 0 {
+		log.Error("could not connect to pulse")
 	}
-
-	go func() {
-		for m.pulse == nil {
-			var err error
-			m.pulse, err = pulseaudio.New()
-			if err != nil {
-				log.Println(err)
-				time.Sleep(time.Second)
-				continue
-			}
-
-			go func() {
-				for {
-					errs := m.pulse.Register(m)
-					if len(errs) > 0 {
-						log.Println(err)
-						time.Sleep(time.Second)
-						continue
-					}
-
-					m.pulse.Listen()
-				}
-			}()
-
-			m.update()
-		}
-	}()
-
-	return m
+	go C.run()
 }
 
-func (m *Pulse) DeviceVolumeUpdated(path dbus.ObjectPath, values []uint32) {
-	m.update()
+func Volume() float64 {
+	return currentVolume
 }
 
-func (m *Pulse) DeviceMuteUpdated(path dbus.ObjectPath, state bool) {
-	m.update()
-}
-
-func (m *Pulse) update() {
-	vol, err := m.volume()
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	m.Up <- vol
-}
-
-func (m *Pulse) SetVolume(v float64) error {
+func SetVolume(v float64) error {
 	percent := int(v * 100)
 	return exec.Command("pactl", "set-sink-volume", "@DEFAULT_SINK@", fmt.Sprintf("%d%%", percent)).Run()
 }
 
-func (m *Pulse) volume() (float64, error) {
-	sinks, err := m.pulse.Core().ListPath("Sinks")
-	if err != nil {
-		return 0, err
-	}
-
-	if len(sinks) == 0 {
-		return 0, nil
-	}
-
-	var muted bool
-	err = m.pulse.Device(sinks[0]).Get("Mute", &muted)
-	if err != nil {
-		return 0, err
-	}
-	if muted {
-		return 0, nil
-	}
-	var volumes []uint32
-	err = m.pulse.Device(sinks[0]).Get("Volume", &volumes)
-	if err != nil {
-		return 0, err
-	}
-
-	var volumeSteps uint32
-	err = m.pulse.Device(sinks[0]).Get("VolumeSteps", &volumeSteps)
-	if err != nil {
-		return 0, err
-	}
-
-	var volTotal uint32
-	for _, v := range volumes {
-		volTotal += v
-	}
-
-	return float64(volTotal) / float64(len(volumes)) / float64(volumeSteps), nil
+func Watch(c chan struct{}) {
+	lock.Lock()
+	defer lock.Unlock()
+	watchers = append(watchers, c)
+	go func() {
+		c <- struct{}{}
+	}()
 }
