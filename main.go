@@ -20,6 +20,7 @@ import (
 	"github.com/BurntSushi/xgbutil/xevent"
 	"github.com/shimmerglass/bar3x/bar"
 	debugsrv "github.com/shimmerglass/bar3x/debug"
+	"github.com/shimmerglass/bar3x/ui/rgb"
 )
 
 const childEnv = "BAR3X_CHILD"
@@ -125,6 +126,9 @@ func runChild() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	r := rgb.New("127.0.0.1:1342")
+	go r.Run()
 
 	if *debug {
 		go func() {
