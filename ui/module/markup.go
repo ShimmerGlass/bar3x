@@ -74,4 +74,8 @@ func RegisterMarkup(mk *markup.Markup, clock *Clock) {
 	mk.Register("Workspaces", func(p ui.ParentDrawable) ui.Drawable {
 		return NewWorkspaces(p, mk)
 	})
+
+	mk.Register("Battery", func(p ui.ParentDrawable) ui.Drawable {
+		return NewBattery(p, mk, clock)
+	})
 }
