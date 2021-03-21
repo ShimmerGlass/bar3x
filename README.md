@@ -19,6 +19,19 @@ Or, if you have the Golang toolchain installed :
 go get github.com/ShimmerGlass/bar3x
 ```
 
+### Building
+
+Building bar3x requires [Go](https://golang.org) and [go-bindata](https://github.com/jteeuwen/go-bindata).  go-bindata is go-get-able:
+
+```
+go get github.com/jteeuwen/go-bindata
+git clone github.com/ShimmerGlass/bar3x
+cd bar3x
+go generate
+go build .
+# Copy ./bar3x to a directory in your $PATH
+```
+
 ### Dependencies
 
 - [libcairo](https://www.cairographics.org/) : should already installed as it is used by GTK, otherwise:
