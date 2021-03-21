@@ -1,6 +1,6 @@
 module github.com/shimmerglass/bar3x
 
-go 1.14
+go 1.16
 
 require (
 	github.com/BurntSushi/freetype-go v0.0.0-20160129220410-b763ddbfe298 // indirect
