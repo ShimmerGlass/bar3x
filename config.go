@@ -1,7 +1,7 @@
-//go:generate go-bindata resources/...
 package main
 
 import (
+	"embed"
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
@@ -14,8 +14,11 @@ import (
 
 var defaultCtx ui.Context
 
+//go:embed resources/*
+var assets embed.FS
+
 func mustB64Asset(path string) string {
-	data, err := Asset(path)
+	data, err := assets.ReadFile(path)
 	if err != nil {
 		log.Fatalf("could not open embeded asset %s: %s", path, err)
 	}
