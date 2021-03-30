@@ -14,6 +14,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/BurntSushi/xgb"
+	"github.com/BurntSushi/xgb/randr"
 	"github.com/BurntSushi/xgb/xproto"
 	"github.com/BurntSushi/xgbutil"
 	"github.com/BurntSushi/xgbutil/xevent"
@@ -50,10 +51,11 @@ func main() {
 		if err != nil {
 			log.Error(err)
 		}
-		ntf := notify.NewNotification("bar3x", fmt.Sprintf("bar3x: exited with status %d", cmd.ProcessState.ExitCode()))
-		ntf.Show()
+		code := cmd.ProcessState.ExitCode()
 
-		if cmd.ProcessState.ExitCode() > 0 {
+		if code > 0 {
+			ntf := notify.NewNotification("bar3x", fmt.Sprintf("bar3x: exited with status %d", cmd.ProcessState.ExitCode()))
+			ntf.Show()
 			time.Sleep(time.Second)
 		}
 	}
@@ -83,6 +85,31 @@ func runChild() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	err = randr.Init(X.Conn())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = randr.SelectInputChecked(X.Conn(), X.RootWin(),
+		randr.NotifyMaskScreenChange|
+			randr.NotifyMaskCrtcChange|
+			randr.NotifyMaskOutputChange|
+			randr.NotifyMaskOutputProperty).Check()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	xevent.HookFun(func(xu *xgbutil.XUtil, event interface{}) bool {
+		switch event.(type) {
+		case randr.ScreenChangeNotifyEvent:
+			os.Exit(0)
+		case randr.NotifyEvent:
+			os.Exit(0)
+		}
+
+		return true
+	}).Connect(X)
 
 	xevent.ErrorHandlerSet(X, func(err xgb.Error) {
 		// we sometimes get BadWindow errors from the tray, I'm not sure why

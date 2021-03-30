@@ -15,11 +15,6 @@ type Screen struct {
 }
 
 func Screens(X *xgb.Conn) ([]Screen, error) {
-	// Every extension must be initialized before it can be used.
-	err := randr.Init(X)
-	if err != nil {
-		return nil, err
-	}
 	// Get the root window on the default screen.
 	root := xproto.Setup(X).DefaultScreen(X).Root
 
