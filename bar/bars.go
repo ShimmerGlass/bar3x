@@ -27,7 +27,7 @@ func CreateBars(ctx ui.Context, x *xgbutil.XUtil) (*Bars, error) {
 	clock := module.NewClock(bars.onClockTick)
 	mk := markup.New()
 	base.RegisterMarkup(mk)
-	module.RegisterMarkup(mk, clock)
+	module.RegisterMarkup(ctx, mk, clock)
 
 	bars.mk = mk
 	bars.clock = clock

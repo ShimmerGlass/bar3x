@@ -1,13 +1,15 @@
 package module
 
 import (
+	"github.com/shimmerglass/bar3x/lib/mirror"
 	"github.com/shimmerglass/bar3x/lib/process"
 	"github.com/shimmerglass/bar3x/ui"
 	"github.com/shimmerglass/bar3x/ui/markup"
 )
 
-func RegisterMarkup(mk *markup.Markup, clock *Clock) {
+func RegisterMarkup(ctx ui.Context, mk *markup.Markup, clock *Clock) {
 	var pr *process.ProcessWatcher
+	var mirrorServer *mirror.Server
 
 	mk.Register("TxtUnit", func(p ui.ParentDrawable) ui.Drawable {
 		return NewTextUnit(p, mk)
@@ -77,5 +79,16 @@ func RegisterMarkup(mk *markup.Markup, clock *Clock) {
 
 	mk.Register("Battery", func(p ui.ParentDrawable) ui.Drawable {
 		return NewBattery(p, mk, clock)
+	})
+
+	mk.Register("MirrorServer", func(p ui.ParentDrawable) ui.Drawable {
+		if mirrorServer == nil {
+			mirrorServer = mirror.NewServer(ctx.MustString("mirror_server_addr"))
+		}
+		return NewMirrorServer(p, mirrorServer)
+	})
+
+	mk.Register("MirrorClient", func(p ui.ParentDrawable) ui.Drawable {
+		return NewMirrorClient(p)
 	})
 }

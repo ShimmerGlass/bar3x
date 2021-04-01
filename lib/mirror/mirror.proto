@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package mirror;
+option go_package = "mirror";
+
+service Mirror {
+  rpc Subscribe(SubscribeRequest) returns (stream Image) {
+  }
+}
+
+message SubscribeRequest {
+  string Name = 1;
+}
+
+message Image {
+  bytes Pixels = 1;
+  int32 Stride = 2;
+  int32 Width = 3;
+  int32 Height = 4;
+}
