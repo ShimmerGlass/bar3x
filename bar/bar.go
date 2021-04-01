@@ -278,7 +278,7 @@ func (b *Bar) initBackground() error {
 	clock := module.NewClock(func() {})
 	mk := markup.New()
 	base.RegisterMarkup(mk)
-	module.RegisterMarkup(mk, clock)
+	module.RegisterMarkup(b.ctx, mk, clock)
 
 	root := ui.NewRoot(b.ctx.New(ui.Context{"bar_width": b.screen.Width}), b.updateAll)
 	el, err := mk.Parse(root, nil, b.ctx.MustString("bar_background"))
