@@ -3,7 +3,6 @@ package module
 import (
 	"fmt"
 	"sort"
-	"strings"
 
 	"github.com/shimmerglass/bar3x/ui"
 	"github.com/shimmerglass/bar3x/ui/base"
@@ -69,7 +68,7 @@ func (m *Workspaces) update() {
 	}
 
 	sort.Slice(wks, func(i, j int) bool {
-		return strings.Compare(wks[i].Name, wks[j].Name) < 1
+		return wks[i].Num < wks[j].Num
 	})
 
 	j := 0
