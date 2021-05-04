@@ -3,6 +3,7 @@ package bar
 import (
 	"fmt"
 	"image"
+	"strings"
 	"sync"
 
 	"github.com/BurntSushi/xgb"
@@ -210,47 +211,48 @@ func NewBar(
 }
 
 func (b *Bar) createRoots() error {
-	if b.ctx.Has("bar_left") {
+	cfg := b.ctx.MustString("bar_left")
+	if strings.TrimSpace(cfg) != "" {
 		ctx := b.ctx.New(ui.Context{"bar_align": "left"})
 		b.LeftRoot = ui.NewRoot(ctx, func() {
 			b.LeftRoot.Paint()
 			b.PaintLeft(b.LeftRoot.Image())
 		})
+		modules, err := b.mk.Parse(b.LeftRoot, nil, cfg)
+		if err != nil {
+			return fmt.Errorf("config: bar_left: %w", err)
+		}
+		b.LeftRoot.Inner = modules
 	}
 
-	if b.ctx.Has("bar_center") {
+	cfg = b.ctx.MustString("bar_center")
+	log.Error(cfg, len(cfg))
+	if strings.TrimSpace(cfg) != "" {
 		ctx := b.ctx.New(ui.Context{"bar_align": "center"})
 		b.CenterRoot = ui.NewRoot(ctx, func() {
 			b.CenterRoot.Paint()
 			b.PaintCenter(b.CenterRoot.Image())
 		})
+		modules, err := b.mk.Parse(b.CenterRoot, nil, cfg)
+		if err != nil {
+			return fmt.Errorf("config: bar_center: %w", err)
+		}
+		b.CenterRoot.Inner = modules
 	}
 
-	if b.ctx.Has("bar_right") {
+	cfg = b.ctx.MustString("bar_right")
+	if strings.TrimSpace(cfg) != "" {
 		ctx := b.ctx.New(ui.Context{"bar_align": "right"})
 		b.RightRoot = ui.NewRoot(ctx, func() {
 			b.RightRoot.Paint()
 			b.PaintRight(b.RightRoot.Image())
 		})
+		modules, err := b.mk.Parse(b.RightRoot, nil, cfg)
+		if err != nil {
+			return fmt.Errorf("config: bar_right: %w", err)
+		}
+		b.RightRoot.Inner = modules
 	}
-
-	modules, err := b.mk.Parse(b.LeftRoot, nil, b.ctx.MustString("bar_left"))
-	if err != nil {
-		return fmt.Errorf("config: bar_left: %w", err)
-	}
-	b.LeftRoot.Inner = modules
-
-	modules, err = b.mk.Parse(b.CenterRoot, nil, b.ctx.MustString("bar_center"))
-	if err != nil {
-		return fmt.Errorf("config: bar_center: %w", err)
-	}
-	b.CenterRoot.Inner = modules
-
-	modules, err = b.mk.Parse(b.RightRoot, nil, b.ctx.MustString("bar_right"))
-	if err != nil {
-		return fmt.Errorf("config: bar_right: %w", err)
-	}
-	b.RightRoot.Inner = modules
 
 	return nil
 }

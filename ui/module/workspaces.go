@@ -2,6 +2,7 @@ package module
 
 import (
 	"fmt"
+	"regexp"
 	"sort"
 
 	"github.com/shimmerglass/bar3x/ui"
@@ -10,6 +11,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	"go.i3wm.org/i3/v4"
 )
+
+var workspaceNumberReg = regexp.MustCompile(`^\d+:\s*`)
 
 type workspaceIndicator struct {
 	Root      *base.Sizer
@@ -26,6 +29,7 @@ type Workspaces struct {
 	display     string
 	maxWidth    int
 	onlyCurrent bool
+	trimNumbers bool
 
 	Row *base.Row
 	els []*workspaceIndicator
@@ -101,7 +105,12 @@ func (m *Workspaces) update() {
 			el.Indicator.SetColor(m.Context().MustColor("accent_color"))
 		}
 
-		el.Text.SetText(wk.Name)
+		name := wk.Name
+		if m.trimNumbers {
+			name = workspaceNumberReg.ReplaceAllString(name, "")
+		}
+
+		el.Text.SetText(name)
 		el.Root.SetVisible(true)
 
 		func(wk i3.Workspace) {
@@ -187,4 +196,11 @@ func (m *Workspaces) OnlyCurrent() bool {
 }
 func (m *Workspaces) SetOnlyCurrent(v bool) {
 	m.onlyCurrent = v
+}
+
+func (m *Workspaces) TrimNumbers() bool {
+	return m.trimNumbers
+}
+func (m *Workspaces) SetTrimNumbers(v bool) {
+	m.trimNumbers = v
 }

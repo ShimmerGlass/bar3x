@@ -3,14 +3,10 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"os"
-	"os/exec"
 	"os/signal"
 	"syscall"
-	"time"
 
-	"github.com/TheCreeper/go-notify"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/BurntSushi/xgb"
@@ -23,46 +19,7 @@ import (
 	"github.com/shimmerglass/bar3x/ui/rgb"
 )
 
-const childEnv = "BAR3X_CHILD"
-
 func main() {
-	if os.Getenv(childEnv) != "" {
-		runChild()
-		return
-	}
-
-	var cmd *exec.Cmd
-
-	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, syscall.SIGHUP)
-	go func() {
-		for range sigs {
-			if cmd != nil {
-				syscall.Kill(cmd.Process.Pid, syscall.SIGUSR1)
-			}
-		}
-	}()
-
-	for {
-		cmd = exec.Command(os.Args[0], os.Args[1:]...)
-		cmd.Stderr = os.Stderr
-		cmd.Stdout = os.Stdout
-		cmd.Env = append(os.Environ(), fmt.Sprintf("%s=1", childEnv))
-		err := cmd.Run()
-		if err != nil {
-			log.Error(err)
-		}
-		code := cmd.ProcessState.ExitCode()
-
-		if code > 0 {
-			ntf := notify.NewNotification("bar3x", fmt.Sprintf("bar3x: exited with status %d", cmd.ProcessState.ExitCode()))
-			ntf.Show()
-			time.Sleep(time.Second)
-		}
-	}
-}
-
-func runChild() {
 	cfgPath := flag.String("config", "", "YAML Config file path")
 	themePath := flag.String("theme", "", "YAML Theme file path")
 	debug := flag.Bool("debug", false, "Enable profile server on port 6060")

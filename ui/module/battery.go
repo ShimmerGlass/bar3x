@@ -21,7 +21,8 @@ type Battery struct {
 	mk    *markup.Markup
 	clock *Clock
 
-	name string
+	name        string
+	showPercent string
 
 	Charging *base.Sizer
 	Bar      *base.Rect
@@ -30,9 +31,10 @@ type Battery struct {
 
 func NewBattery(p ui.ParentDrawable, mk *markup.Markup, clock *Clock) *Battery {
 	return &Battery{
-		mk:         mk,
-		clock:      clock,
-		moduleBase: newBase(p),
+		mk:          mk,
+		clock:       clock,
+		moduleBase:  newBase(p),
+		showPercent: "true",
 	}
 }
 
@@ -115,8 +117,14 @@ func (m *Battery) Update(ctx context.Context) {
 		m.Bar.SetColor(m.Context().MustColor("accent_color"))
 	}
 
-	m.Value.Unit.SetText("%")
-	m.Value.Value.SetText(fmt.Sprintf("%.0f", value*100))
+	if m.showPercent == "true" || (m.showPercent == "low" && value < 0.25) {
+		m.Value.Unit.SetText("%")
+		m.Value.Value.SetText(fmt.Sprintf("%.0f", value*100))
+		m.Value.SetVisible(true)
+	} else {
+		m.Value.SetVisible(false)
+	}
+
 	m.Charging.SetVisible(charging)
 }
 
@@ -125,7 +133,14 @@ func (m *Battery) Update(ctx context.Context) {
 func (m *Battery) Name() string {
 	return m.name
 }
-
 func (m *Battery) SetName(v string) {
 	m.name = v
+}
+
+func (m *Battery) ShowPercent() string {
+	return m.showPercent
+}
+
+func (m *Battery) SetShowPercent(v string) {
+	m.showPercent = v
 }
