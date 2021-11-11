@@ -12,18 +12,22 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var initialized = false
 var currentVolume float64
 
 var lock sync.Mutex
 var watchers []chan struct{}
 
-func init() {
-	log.Info("connecting to pulse")
-	r := C.initialize()
-	if r != 0 {
-		log.Error("could not connect to pulse")
+func Init() {
+	if !initialized {
+		initialized = true
+		log.Info("connecting to pulse")
+		r := C.initialize()
+		if r != 0 {
+			log.Error("could not connect to pulse")
+		}
+		go C.run()
 	}
-	go C.run()
 }
 
 func Volume() float64 {

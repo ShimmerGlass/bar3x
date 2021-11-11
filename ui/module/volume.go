@@ -30,6 +30,7 @@ func NewVolume(p ui.ParentDrawable, mk *markup.Markup) *Volume {
 }
 
 func (m *Volume) Init() error {
+	pulse.Init()
 	_, err := m.mk.Parse(m, m, `
 		<Row ref="Root">
 			<Sizer PaddingRight="{h_padding}">
