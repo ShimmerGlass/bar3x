@@ -209,48 +209,62 @@ func NewBar(
 	return b, nil
 }
 
+func (b *Bar) hasBarSection(section string) bool {
+	if b.ctx.Has(section) {
+		sectionMarkup := b.ctx.MustString(section)
+		if sectionMarkup != "<ModuleRow>\n</ModuleRow>\n" {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (b *Bar) createRoots() error {
-	if b.ctx.Has("bar_left") {
+	if b.hasBarSection("bar_left") {
 		ctx := b.ctx.New(ui.Context{"bar_align": "left"})
 		b.LeftRoot = ui.NewRoot(ctx, func() {
 			b.LeftRoot.Paint()
 			b.PaintLeft(b.LeftRoot.Image())
 		})
+
+
+		modules, err := b.mk.Parse(b.LeftRoot, nil, b.ctx.MustString("bar_left"))
+		if err != nil {
+			return fmt.Errorf("config: bar_left: %w", err)
+		}
+		b.LeftRoot.Inner = modules
+
 	}
 
-	if b.ctx.Has("bar_center") {
+	if b.hasBarSection("bar_center") {
 		ctx := b.ctx.New(ui.Context{"bar_align": "center"})
 		b.CenterRoot = ui.NewRoot(ctx, func() {
 			b.CenterRoot.Paint()
 			b.PaintCenter(b.CenterRoot.Image())
 		})
+
+
+		modules, err := b.mk.Parse(b.CenterRoot, nil, b.ctx.MustString("bar_center"))
+		if err != nil {
+			return fmt.Errorf("config: bar_center: %w", err)
+		}
+		b.CenterRoot.Inner = modules
 	}
 
-	if b.ctx.Has("bar_right") {
+	if b.hasBarSection("bar_right") {
 		ctx := b.ctx.New(ui.Context{"bar_align": "right"})
 		b.RightRoot = ui.NewRoot(ctx, func() {
 			b.RightRoot.Paint()
 			b.PaintRight(b.RightRoot.Image())
 		})
-	}
 
-	modules, err := b.mk.Parse(b.LeftRoot, nil, b.ctx.MustString("bar_left"))
-	if err != nil {
-		return fmt.Errorf("config: bar_left: %w", err)
+		modules, err := b.mk.Parse(b.RightRoot, nil, b.ctx.MustString("bar_right"))
+		if err != nil {
+			return fmt.Errorf("config: bar_right: %w", err)
+		}
+		b.RightRoot.Inner = modules
 	}
-	b.LeftRoot.Inner = modules
-
-	modules, err = b.mk.Parse(b.CenterRoot, nil, b.ctx.MustString("bar_center"))
-	if err != nil {
-		return fmt.Errorf("config: bar_center: %w", err)
-	}
-	b.CenterRoot.Inner = modules
-
-	modules, err = b.mk.Parse(b.RightRoot, nil, b.ctx.MustString("bar_right"))
-	if err != nil {
-		return fmt.Errorf("config: bar_right: %w", err)
-	}
-	b.RightRoot.Inner = modules
 
 	return nil
 }
