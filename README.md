@@ -16,7 +16,7 @@ Download the [latest release](https://github.com/ShimmerGlass/bar3x/releases/lat
 Or, if you have the Golang toolchain installed :
 
 ```
-go get github.com/ShimmerGlass/bar3x
+go get github.com/shimmerglass/bar3x
 ```
 
 ### Building
