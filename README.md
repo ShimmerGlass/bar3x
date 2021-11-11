@@ -49,16 +49,17 @@ Here is an example config :
 
 ```yaml
 
-// colors configuration
-bg_color:            "#17191e" // bar background
-text_color:          "#d4e5f7" // general text
-accent_color:        "#1ebce8" // icons and UI elements such as bars
-neutral_color:       "#37393e" // background elements such as module separators and background graphs
-neutral_light_color: "#90949d" // used for less important text such as units
+# colors configuration
+bg_color:            "#17191e" # bar background
+text_color:          "#d4e5f7" # general text
+accent_color:        "#1ebce8" # icons and UI elements such as bars
+neutral_color:       "#37393e" # background elements such as module separators and background graphs
+neutral_light_color: "#90949d" # used for less important text such as units
 
-// modules can be placed on the left, center and right of the bar
+# modules can be placed on the left, center and right of the bar
+# choose the modules you want in each <ModuleRow>
 bar_left: |
-  <ModuleRow> // choose the modules you want in each <ModuleRow>
+  <ModuleRow>
     <Volume />
   </ModuleRow>
 
