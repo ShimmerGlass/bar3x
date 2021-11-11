@@ -80,12 +80,19 @@ func (b *Bars) createBars() error {
 
 func (b *Bars) onClockTick() {
 	for _, bar := range b.Bars {
-		bar.LeftRoot.Paint()
-		bar.CenterRoot.Paint()
-		bar.RightRoot.Paint()
+		if bar.LeftRoot != nil {
+			bar.LeftRoot.Paint()
+			bar.PaintLeft(bar.LeftRoot.Image())
+		}
 
-		bar.PaintLeft(bar.LeftRoot.Image())
-		bar.PaintCenter(bar.CenterRoot.Image())
-		bar.PaintRight(bar.RightRoot.Image())
+		if bar.CenterRoot != nil {
+			bar.CenterRoot.Paint()
+			bar.PaintCenter(bar.CenterRoot.Image())
+		}
+
+		if bar.RightRoot != nil {
+			bar.RightRoot.Paint()
+			bar.PaintRight(bar.RightRoot.Image())
+		}
 	}
 }
