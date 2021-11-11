@@ -103,3 +103,24 @@ func readBandwidth(dev string) (int, int, error) {
 
 	return 0, 0, fmt.Errorf("dev \"%s\" not found", dev)
 }
+
+
+func IsValidInterface (dev string) bool {
+	lines, err := readLines("/proc/net/dev")
+	if err != nil {
+		return false
+	}
+
+	for _, line := range lines {
+		fields := strings.Split(line, ":")
+		if len(fields) < 2 {
+			continue
+		}
+		key := strings.TrimSpace(fields[0])
+		if key == dev {
+			return true
+		}
+	}
+
+	return false
+}
