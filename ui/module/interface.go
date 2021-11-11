@@ -2,6 +2,7 @@ package module
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -79,8 +80,20 @@ func (m *Interface) Iface() string {
 	return m.iface
 }
 func (m *Interface) SetIface(s string) {
-	m.iface = s
-	m.bw = bandwidth.New(s)
+	var interfaces []string
+	if strings.Contains(s, ",") {
+		interfaces = strings.Split(s, ",")
+	} else {
+		interfaces = []string{s}
+	}
+
+	for _, iface := range interfaces {
+		if bandwidth.IsValidInterface(iface) {
+			m.iface = iface
+			m.bw = bandwidth.New(iface)
+			return
+		}
+	}
 }
 
 func (m *Interface) ShowLabel() bool {
