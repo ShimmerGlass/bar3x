@@ -69,6 +69,9 @@ func NewBar(
 		return nil, fmt.Errorf("x create: %w", err)
 	}
 
+	// Dont show over full screen apps
+	win.Stack(xproto.StackModeBelow)
+
 	// Make this window close gracefully.
 	win.WMGracefulClose(func(w *xwindow.Window) {
 		xevent.Detach(w.X, w.Id)
