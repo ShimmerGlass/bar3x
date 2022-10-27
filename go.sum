@@ -53,8 +53,6 @@ github.com/Shopify/sarama v1.19.0/go.mod h1:FVkBWblsNy7DGZRfXLU0O9RCGt5g3g3yEuWX
 github.com/Shopify/toxiproxy v2.1.4+incompatible/go.mod h1:OXgGpZ6Cli1/URJOF1DMxUHB2q5Ap20/P/eIdh4G0pI=
 github.com/StackExchange/wmi v0.0.0-20210224194228-fe8f1750fd46 h1:5sXbqlSomvdjlRbWyNqkPsJ3Fg+tQZCbgeX1VGljbQY=
 github.com/StackExchange/wmi v0.0.0-20210224194228-fe8f1750fd46/go.mod h1:3eOhrUMpNV+6aFIbp5/iudMxNCF27Vw2OZgy4xEx0Fg=
-github.com/TheCreeper/go-notify v0.2.0 h1:akzlSD8IWx+uOZqGNwS0FYsThYuw11JkXsYiQXY5kgo=
-github.com/TheCreeper/go-notify v0.2.0/go.mod h1:paZnY8fMbaOyZLQWJitGWAMrO5ot3Ow7id47cyEL1KA=
 github.com/VividCortex/gohistogram v1.0.0/go.mod h1:Pf5mBqqDxYaXu3hDrrU+w6nw50o/4+TcAqDqk/vUH7g=
 github.com/Wifx/gonetworkmanager v0.3.0 h1:Gn5uD11cBG6qg9w0NENjTjMNZ5Asz0zxRo7t2twPQ84=
 github.com/Wifx/gonetworkmanager v0.3.0/go.mod h1:EdhHf2O00IZXfMv9LC6CS6SgTwcMTg/ZSDhGvch0cs8=

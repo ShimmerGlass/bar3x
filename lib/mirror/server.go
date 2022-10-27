@@ -1,6 +1,7 @@
 package mirror
 
 import (
+	"bytes"
 	"image"
 	"net"
 	sync "sync"
@@ -19,6 +20,8 @@ type Server struct {
 	modules   map[string]*Image
 	listeners map[string]map[chan *Image]struct{}
 
+	throttle *time.Timer
+
 	start sync.Once
 }
 
@@ -27,6 +30,7 @@ func NewServer(addr string) *Server {
 		addr:      addr,
 		modules:   map[string]*Image{},
 		listeners: map[string]map[chan *Image]struct{}{},
+		throttle:  time.NewTimer(time.Second),
 	}
 }
 
@@ -58,7 +62,12 @@ func (s *Server) Send(name string, img *image.RGBA) {
 		Height: int32(img.Rect.Dy()),
 	}
 
+	if s.modules[name] != nil && bytes.Equal(s.modules[name].Pixels, imgpb.Pixels) {
+		return
+	}
+
 	s.modules[name] = imgpb
+
 	for c := range s.listeners[name] {
 		select {
 		case c <- imgpb:
@@ -90,6 +99,7 @@ func (s *Server) Subscribe(req *SubscribeRequest, srv Mirror_SubscribeServer) er
 		log.Infof("mirror: %s: sending img", req.Name)
 		err := srv.Send(img)
 		if err != nil {
+			log.Errorf("mirror server: send: %s", err)
 			return err
 		}
 	}

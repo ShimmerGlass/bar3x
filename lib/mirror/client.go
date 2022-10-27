@@ -26,6 +26,7 @@ func NewClient(addr string) *Client {
 
 func (c *Client) Subscribe(name string) (<-chan *image.RGBA, error) {
 	c.start.Do(func() {
+		log.Infof("mirror client: subscribing to %s", c.addr)
 		conn, err := grpc.Dial(c.addr, grpc.WithInsecure())
 		if err != nil {
 			log.Fatal(err)
@@ -36,6 +37,10 @@ func (c *Client) Subscribe(name string) (<-chan *image.RGBA, error) {
 	})
 
 	imgs := make(chan *image.RGBA)
+
+	first := make(chan struct{}, 1)
+	first <- struct{}{}
+	throttle := time.NewTicker(100 * time.Millisecond)
 
 	go func() {
 	Connect:
@@ -53,9 +58,16 @@ func (c *Client) Subscribe(name string) (<-chan *image.RGBA, error) {
 					break
 				}
 				if err != nil {
-					log.Error(err)
+					log.Errorf("mirror client: receive: %s", err)
 					time.Sleep(5 * time.Second)
 					continue Connect
+				}
+
+				select {
+				case <-throttle.C:
+				case <-first:
+				default:
+					continue
 				}
 
 				log.Infof("mirror: %s: received img", name)

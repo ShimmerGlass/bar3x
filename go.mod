@@ -10,12 +10,12 @@ require (
 	github.com/PaesslerAG/gval v1.1.0
 	github.com/PaesslerAG/jsonpath v0.1.1 // indirect
 	github.com/StackExchange/wmi v0.0.0-20210224194228-fe8f1750fd46 // indirect
-	github.com/TheCreeper/go-notify v0.2.0
 	github.com/Wifx/gonetworkmanager v0.3.0
 	github.com/briandowns/openweathermap v0.16.0
 	github.com/fogleman/gg v1.3.0
 	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/godbus/dbus v4.1.0+incompatible
+	github.com/godbus/dbus/v5 v5.0.3 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/protobuf v1.5.2
 	github.com/hashicorp/golang-lru v0.5.4
